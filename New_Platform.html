@@ -263,80 +263,75 @@
 			editor.setContent(tempDiv.innerHTML);
 		}
 		
-function analyzeKeywords() {
-    var editor = tinymce.get('tiny');
-    
-    // Use TinyMCE API to get the word count
-    var totalWordCount = editor.plugins.wordcount.getCount();
+		function analyzeKeywords() {
+			var editor = tinymce.get('tiny');
+			
+			// Use TinyMCE API to get the word count
+			var totalWordCount = editor.plugins.wordcount.getCount();
 
-    var keywordInput = document.getElementById('keywordInput');
-    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+			var keywordInput = document.getElementById('keywordInput');
+			var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
 
-    var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
-    keywordResultsTable.innerHTML = '';
+			var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
+			keywordResultsTable.innerHTML = '';
 
-    keywords.forEach(function(keyword) {
-        var escapedKeyword = escapeRegExp(keyword);
-        // Update the regular expression pattern to match whole words and capture partial matches
-        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
+			keywords.forEach(function(keyword) {
+				var escapedKeyword = escapeRegExp(keyword);
+				// Update the regular expression pattern to match whole words and capture partial matches
+				var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
 
-        var content = editor.getContent({ format: 'text' });
-        var matches = content.match(pattern) || [];
-        var exactMatches = matches.length;
+				var content = editor.getContent({ format: 'text' });
+				var matches = content.match(pattern) || [];
+				var exactMatches = matches.length;
 
-        // Count partial matches using the helper function
-        var partialMatches = countPartialMatches(content, escapedKeyword);
+				// Count partial matches using the helper function
+				var partialMatches = countPartialMatches(content, escapedKeyword);
 
-        var row = keywordResultsTable.insertRow();
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-        var cell5 = row.insertCell(4);
+				var row = keywordResultsTable.insertRow();
+				var cell1 = row.insertCell(0);
+				var cell2 = row.insertCell(1);
+				var cell3 = row.insertCell(2);
+				var cell4 = row.insertCell(3);
+				var cell5 = row.insertCell(4);
 
-        cell1.innerHTML = keyword;
-        cell2.innerHTML = exactMatches;
-        cell3.innerHTML = partialMatches - exactMatches; // Deduct exact matches from partial matches
-        cell4.innerHTML = ((exactMatches / totalWordCount) * 100).toFixed(2) + '%'; // Calculate density
-        cell5.innerHTML = (partialMatches / totalWordCount * 100).toFixed(2) + '%'; // Density with partial
-    });
-}
+				cell1.innerHTML = keyword;
+				cell2.innerHTML = exactMatches;
+				cell3.innerHTML = partialMatches - exactMatches; // Deduct exact matches from partial matches
+				cell4.innerHTML = ((exactMatches / totalWordCount) * 100).toFixed(2) + '%'; // Calculate density
+				cell5.innerHTML = (partialMatches / totalWordCount * 100).toFixed(2) + '%'; // Density with partial
+			});
+		}
 
-function countPartialMatches(content, escapedKeyword) {
-    // Update the pattern to capture partial matches before and after the keyword
-    var partialPattern = new RegExp('(?:\\b|\\W)(' + escapedKeyword + '[a-zA-Z]*|[a-zA-Z]*' + escapedKeyword + '[a-zA-Z]*)(?:\\b|\\W)', 'giu');
-    var matches = content.match(partialPattern) || [];
+		function countPartialMatches(content, escapedKeyword) {
+			// Update the pattern to capture partial matches before and after the keyword
+			var partialPattern = new RegExp('(?:\\b|\\W)(' + escapedKeyword + '\\w*' + '|' + '\\w*' + escapedKeyword + '\\w*' + '|' + '\\w*' + escapedKeyword + ')(?:\\b|\\W)', 'giu');
+			var matches = content.match(partialPattern) || [];
 
-    // Extract the captured groups to get the partial matches
-    var partialMatches = matches.map(match => match[1]);
+			// Extract the captured groups to get the partial matches
+			var partialMatches = matches.map(match => match.trim());
 
-    // Filter out exact matches
-    var exactMatches = partialMatches.filter(partial => partial.toLowerCase() === escapedKeyword.toLowerCase());
-    var filteredPartialMatches = partialMatches.filter(partial => !exactMatches.includes(partial.toLowerCase()));
+			// Filter out exact matches
+			var exactMatches = partialMatches.filter(partial => partial.toLowerCase() === escapedKeyword.toLowerCase());
+			var filteredPartialMatches = partialMatches.filter(partial => !exactMatches.includes(partial.toLowerCase()));
 
-    return filteredPartialMatches.length;
-}
+			return filteredPartialMatches.length;
+		}
 
+		function escapeRegExp(string) {
+			// Create a pattern that matches the original keyword and its variations
+			var escapedVariations = Array.from(string).map(char => {
+				var baseChar = char;
+				if (/[\u0300-\u036f]/.test(char)) {
+					// If the character has a diacritic mark, include it as an alternative
+					baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
+				}
 
+				// Include the character and its variations
+				return baseChar + '[\\u0300-\\u036f]*';
+			}).join('[\\s\\W]*');
 
-function escapeRegExp(string) {
-    // Create a pattern that matches the original keyword and its variations
-    var escapedVariations = Array.from(string).map(char => {
-        var baseChar = char;
-        if (/[\u0300-\u036f]/.test(char)) {
-            // If the character has a diacritic mark, include it as an alternative
-            baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
-        }
-
-        // Include the character and its variations
-        return baseChar + '[\\u0300-\\u036f]*';
-    }).join('[\\s\\W]*');
-
-    return escapedVariations;
-}
-
-
-
+			return escapedVariations;
+		}
   
     </script>
   </body>
