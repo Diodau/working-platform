@@ -278,10 +278,14 @@ function analyzeKeywords() {
     keywords.forEach(function(keyword) {
         var escapedKeyword = escapeRegExp(keyword);
         // Update the regular expression pattern to match whole words and capture partial matches
-        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'giu');
+        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
 
-        var matches = editor.getContent({ format: 'text' }).match(pattern) || [];
+        var content = editor.getContent({ format: 'text' });
+        var matches = content.match(pattern) || [];
         var exactMatches = matches.length;
+
+        // Count partial matches using the helper function
+        var partialMatches = countPartialMatches(content, escapedKeyword);
 
         var row = keywordResultsTable.insertRow();
         var cell1 = row.insertCell(0);
@@ -292,10 +296,25 @@ function analyzeKeywords() {
 
         cell1.innerHTML = keyword;
         cell2.innerHTML = exactMatches;
-        cell3.innerHTML = 'N/A';
+        cell3.innerHTML = partialMatches - exactMatches; // Deduct exact matches from partial matches
         cell4.innerHTML = ((exactMatches / totalWordCount) * 100).toFixed(2) + '%'; // Calculate density
-        cell5.innerHTML = 'N/A';
+        cell5.innerHTML = (partialMatches / totalWordCount * 100).toFixed(2) + '%'; // Density with partial
     });
+}
+
+function countPartialMatches(content, escapedKeyword) {
+    // Update the pattern to capture partial matches before and after the keyword
+    var partialPattern = new RegExp('(?:\\b|\\W)(' + escapedKeyword + '[a-zA-Z]*|[a-zA-Z]*' + escapedKeyword + '[a-zA-Z]*)(?:\\b|\\W)', 'giu');
+    var matches = content.match(partialPattern) || [];
+
+    // Extract the captured groups to get the partial matches
+    var partialMatches = matches.map(match => match[1]);
+
+    // Filter out exact matches
+    var exactMatches = partialMatches.filter(partial => partial.toLowerCase() === escapedKeyword.toLowerCase());
+    var filteredPartialMatches = partialMatches.filter(partial => !exactMatches.includes(partial.toLowerCase()));
+
+    return filteredPartialMatches.length;
 }
 
 
