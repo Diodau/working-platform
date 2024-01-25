@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.tiny.cloud/1/rw00kgcgf2ggfyp0mu3e3upwp7b7f8y6daf38ksflv1g42y3/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
+	<script src="https://cdn.rawgit.com/mathiasbynens/he/a2dde56/he.js"></script>
+
+	<style>
+		.container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+		
+		.tools-button {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+		
+		.tools {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+        }
+
+        .tools.show {
+            display: block;
+            text-align: left;
+        }
+		
+		.return-to-top-button {
+            position: fixed;
+            font-size: 16px;
+            bottom: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #cae8ca;
+            border: 2px solid #4CAF50;
+            z-index: 1;
+        }
+		.container {
+		  display: flex;
+		  margin-top: 1%;
+		}
+		.keywords {
+		  width: 35%;
+		  margin-left: 1%;
+		  border-radius: 11px;
+		  border: 2px solid #ededed;
+		  padding: 1%;
+		}
+		.editor {
+		  width: 65%;
+		}
+		.keywords textarea {
+		  display: none; /* Hide the textarea by default */
+		  width: calc(100% - 20px);
+		  margin-bottom: 10px;
+		  resize: vertical;
+		}
+		.keywords button {
+		  padding: 8px;
+		  cursor: pointer;
+		}
+		table {
+		  border-collapse: collapse;
+		  width: 100%;
+		}
+		th, td {
+		  border: 1px solid black;
+		  padding: 8px;
+		  text-align: left;
+		}
+		th {
+		  background-color: #f2f2f2;
+		}
+		
+		.tools-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+		
+		.highlighted-word {
+    background-color: yellow;
+    /* Other styles for highlighting */
+}
+
+	</style>
+  </head>
+  <body>
+    <div class="tools-container">
+		<button class="tools-button" onclick="toggleTools()">Tools</button>
+				<div class="tools" id="tools">
+					<button class="trailing-spaces" onclick="removeTrailingSpaces()">Remove Trailing Spaces</button>
+					<button class="empty-paragraphs" onclick="removeEmptyParagraphs()">Remove Empty Paragraphs</button>
+					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
+					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
+				</div>
+		
+		<div class="container">
+			
+			<div class="editor">
+				<textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
+			</div>
+			
+			<div class="keywords">
+			  <textarea id="keywordInput" placeholder="Paste your keywords here"></textarea>
+			  <button id="addKeywordsBtn">Add Keywords</button>
+			  <button id="analyzeKeywordsBtn" onclick="analyzeKeywords()">Analyze Keywords</button>
+			  <h3>Keyword Results</h3>
+			  <table id="keywordResults">
+				<thead>
+				  <tr>
+					<th>Keyword</th>
+					<th>Exact Matches</th>
+					<th>Partial Matches</th>
+					<th>Density</th>
+					<th>Density with Partial</th>
+				  </tr>
+				</thead>
+				<tbody></tbody>
+			  </table>
+			</div>
+		</div>
+	</div>
+    <script>
+      $('textarea#tiny').tinymce({
+			height: 500,
+			menubar: false,
+			browser_spellcheck: true,
+			entity_encoding: 'raw', // or 'named'
+			contextmenu: false,
+			plugins: [
+			  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+			  'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+			  'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'paste'
+			],
+			  toolbar: ' blocks | bold italic backcolor | ' +
+			  'alignleft aligncenter alignright alignjustify | ' +
+			  'bullist numlist outdent indent | table | ' +
+			  'link | image | media | ' +
+			  'removeformat | undo redo | wordcount | searchreplace | help',
+			  menu: {
+				file: { title: 'File', items: 'newdocument restoredraft | preview | export | print | deleteallconversations' },
+				edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
+				view: { title: 'View', items: 'code | visualaid visualchars visualblocks | spellchecker | preview fullscreen | showcomments' },
+				insert: { title: 'Insert', items: 'image link media addcomment pageembed template codesample inserttable | charmap emoticons hr | pagebreak nonbreaking anchor tableofcontents | insertdatetime' },
+				format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | language | removeformat' },
+				tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
+				table: { title: 'Table', items: 'inserttable | cell row column | advtablesort | tableprops deletetable' },
+				help: { title: 'Help', items: 'help' }
+			  },
+				menubar: 'favs file edit view insert format tools table help',
+				content_css: 'css/content.css',
+				paste_retain_style_properties: 'all',
+				paste_webkit_styles: 'all',
+				paste_word_valid_elements: "b,strong,i,em,li,ol,ul"
+				
+		});
+	  
+	  function toggleTools() {
+        var instructions = document.getElementById('tools');
+        instructions.classList.toggle('show');
+
+        var toolsButton = document.querySelector('.tools-button');
+        toolsButton.textContent = instructions.classList.contains('show') ? 'Hide Tools' : 'Tools';
+		}
+	
+	    var addKeywordsBtn = document.getElementById('addKeywordsBtn');
+        var keywordInput = document.getElementById('keywordInput');
+        
+		keywordInput.style.display = 'none';
+		
+        addKeywordsBtn.addEventListener('click', function() {
+            if (keywordInput.style.display === 'none') {
+                keywordInput.style.display = 'block';
+                addKeywordsBtn.textContent = 'Hide Keywords';
+            } else {
+                keywordInput.style.display = 'none';
+                addKeywordsBtn.textContent = 'Add Keywords';
+            }
+        });
+
+		function removeTrailingSpaces() {
+			var editor = tinymce.get('tiny');
+			var content = editor.getContent();
+
+			// Remove trailing spaces at the end of paragraphs or lines, and multiple spaces between words or after punctuation
+			content = content.replace(/(\s*<p>[\s\ufeff]*<\/p>\s*)|(&nbsp;\s*)|(\s+<p>[\s\ufeff]*<\/p>\s*)|(\s*<\/p>\s*)|(\s*<br\s*\/?>\s*)|(\s{2,})/gm, function(match) {
+				return (match.trim().length > 1) ? ' ' : '';
+			});
+			
+			editor.setContent(content);
+		}
+
+
+		// Function to remove empty paragraphs
+		function removeEmptyParagraphs() {
+			var editor = tinymce.get('tiny');
+			var content = editor.getContent();
+
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+
+			// Select all paragraphs in the content
+			var paragraphs = tempDiv.getElementsByTagName('p');
+
+			// Loop through paragraphs and remove empty ones
+			for (var i = paragraphs.length - 1; i >= 0; i--) {
+				var paragraphContent = paragraphs[i].textContent.trim();
+				if (paragraphContent === '') {
+					paragraphs[i].remove();
+				}
+			}
+
+			editor.setContent(tempDiv.innerHTML);
+		}
+
+		// Bind the function to the button click event
+		var removeEmptyParagraphsButton = document.querySelector('.empty-paragraphs');
+		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
+
+
+		removeTrailingSpacesButton.addEventListener('click', removeTrailingSpaces);
+		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
+	
+		function capitalizeHeadings() {
+			var editor = tinymce.get('tiny');
+			var content = editor.getContent();
+
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+
+			// Select all headings in the content
+			var headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+			// List of words to exclude from lowercase (APA style)
+			var excludedWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet', 'ad', 'al', 'allo', 'ai', 'il', 'agli', 'all', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo', 'dai', 'dagli', 'dall', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'dell', 'della', 'delle', 'in', 'un', 'una', 'la', 'lo', 'gli', 'nel', 'nello', 'nei', 'negli', 'nell', 'nella', 'nelle', 'su', 'sul', 'sullo', 'sui', 'sugli', 'sull', 'sulla', 'sulle', 'y', 'e', 'o', 'u', 'con', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'según', 'sin', 'sobre', 'tras', 'ante', 'bajo', 'cabe', 'contra', 'durante', 'mediante', 'excepto', 'salvo', 'toda', 'todas', 'todo', 'todos', 'und', 'oder', 'aber', 'denn', 'doch', 'also', 'nur', 'jedoch', 'weder', 'sowie', 'sodass', 'weil', 'dass', 'obwohl', 'trotzdem', 'falls', 'weiter', 'zwar', 'nämlich', 'ja', 'nein', 'doch', 'denn', 'auch', 'nicht', 'sehr', 'mehr', 'wenig', 'viel', 'a', 'o', 'as', 'os', 'à', 'ao', 'às', 'aos', 'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas', 'por', 'pelo', 'pela', 'pelos', 'pelas', 'com', 'sem', 'sob', 'sobre', 'ante', 'após', 'até', 'contra', 'entre'];
+
+			// Function to capitalize according to APA style
+			function capitalizeAPA(text) {
+				return text.toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
+					return a.toUpperCase();
+				}).replace(new RegExp('\\b(?:' + excludedWords.join('|') + ')\\b', 'gi'), function (word) {
+					return word.toLowerCase();
+				});
+			}
+
+			// Loop through headings and apply APA capitalization
+			headings.forEach(function (heading) {
+				var headingText = heading.textContent.trim();
+				heading.textContent = capitalizeAPA(headingText);
+			});
+
+			editor.setContent(tempDiv.innerHTML);
+		}
+		
+function analyzeKeywords() {
+    var editor = tinymce.get('tiny');
+    var content = editor.getContent();
+
+    var keywordInput = document.getElementById('keywordInput');
+    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+
+    var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
+    keywordResultsTable.innerHTML = '';
+
+    keywords.forEach(function(keyword) {
+        var escapedKeyword = escapeRegExp(keyword);
+        // Update the regular expression pattern to match whole words and capture partial matches
+        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'giu');
+
+        var matches = content.match(pattern) || [];
+        var density = matches.length;
+
+        var row = keywordResultsTable.insertRow();
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+
+        cell1.innerHTML = keyword;
+        cell2.innerHTML = density;
+        cell3.innerHTML = 'N/A';
+        cell4.innerHTML = (density / content.split(/\s+/).length * 100).toFixed(2) + '%';
+        cell5.innerHTML = 'N/A';
+    });
+}
+
+function escapeRegExp(string) {
+    // Create a pattern that matches the original keyword and its variations
+    var escapedVariations = Array.from(string).map(char => {
+        if (/[\u0300-\u036f]/.test(char)) {
+            // If the character has a diacritic mark, include it as an alternative
+            return char + '[\\u0300-\\u036f]?';
+        } else {
+            // Otherwise, include the character itself
+            return char;
+        }
+    }).join('[\\s\\W]*');
+
+    return escapedVariations;
+}
+
+
+  
+    </script>
+  </body>
+</html>
