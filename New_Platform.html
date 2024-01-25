@@ -277,19 +277,22 @@
 			editor.setContent(tempDiv.innerHTML);
 		}
 				
-		function analyzeKeywords() {
+function analyzeKeywords() {
     var editor = tinymce.get('tiny');
     var totalWordCount = editor.plugins.wordcount.getCount();
     var keywordInput = document.getElementById('keywordInput');
     var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
     var requiredAmountInput = document.getElementById('requiredAmountInput');
-    var requiredAmounts = requiredAmountInput.value.split('\n').map(amount => parseInt(amount.trim())).filter(amount => !isNaN(amount));
+    var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
 
     var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
     keywordResultsTable.innerHTML = '';
 
     keywords.forEach(function(keyword, index) {
         var escapedKeyword = escapeRegExp(keyword);
+
+        // Parse the required amount entry
+        var requiredAmount = parseRequiredAmount(requiredAmounts[index]);
         var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
         var content = editor.getContent({ format: 'text' });
         var matches = content.match(pattern) || [];
@@ -306,16 +309,56 @@
         cell1.innerHTML = keyword;
         cell2.innerHTML = exactMatches + "<br>" + " (" + ((exactMatches / totalWordCount) * 100).toFixed(2) + '%' + ")";
         cell3.innerHTML = partialMatches - exactMatches + "<br>" + " (" + (partialMatches / totalWordCount * 100).toFixed(2) + '%)';
-        
+
         // Add the required amount to the table
-        var requiredAmount = requiredAmounts[index] || 0;
-        cell4.innerHTML = requiredAmount;
+        cell4.innerHTML = formatRequiredAmount(requiredAmount);
 
         // Check if the actual count is within the specified range
-        var countInRange = exactMatches >= requiredAmount;
+        var countInRange = isCountInRange(exactMatches, requiredAmount);
         cell4.className = countInRange ? 'count-in-range' : 'count-out-of-range';
     });
 }
+
+function parseRequiredAmount(entry) {
+    // Check if the entry is a percentage
+    if (entry.endsWith('%')) {
+        var percentage = parseFloat(entry.slice(0, -1));
+        return { percentage: percentage };
+    }
+
+    // Check if the entry is a range
+    if (entry.includes('-')) {
+        var rangeValues = entry.split('-').map(val => parseInt(val.trim()));
+        if (rangeValues.length === 2 && !isNaN(rangeValues[0]) && !isNaN(rangeValues[1])) {
+            return { min: rangeValues[0], max: rangeValues[1] };
+        }
+    }
+
+    // Treat as a single integer
+    var intValue = parseInt(entry);
+    return isNaN(intValue) ? 0 : intValue;
+}
+
+function formatRequiredAmount(requiredAmount) {
+    if (typeof requiredAmount === 'number') {
+        return requiredAmount.toString();
+    } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
+        return requiredAmount.percentage + '%';
+    } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
+        return requiredAmount.min + ' - ' + requiredAmount.max;
+    }
+    return '';
+}
+
+function isCountInRange(count, requiredAmount) {
+    if (typeof requiredAmount === 'number') {
+        return count >= requiredAmount;
+    } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
+        return count >= requiredAmount.min && count <= requiredAmount.max;
+    }
+    return false;
+}
+
 
 
 		function countPartialMatches(content, escapedKeyword) {
