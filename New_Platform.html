@@ -265,7 +265,9 @@
 		
 function analyzeKeywords() {
     var editor = tinymce.get('tiny');
-    var content = editor.getContent();
+    
+    // Use TinyMCE API to get the word count
+    var totalWordCount = editor.plugins.wordcount.getCount();
 
     var keywordInput = document.getElementById('keywordInput');
     var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
@@ -278,8 +280,8 @@ function analyzeKeywords() {
         // Update the regular expression pattern to match whole words and capture partial matches
         var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'giu');
 
-        var matches = content.match(pattern) || [];
-        var density = matches.length;
+        var matches = editor.getContent({ format: 'text' }).match(pattern) || [];
+        var exactMatches = matches.length;
 
         var row = keywordResultsTable.insertRow();
         var cell1 = row.insertCell(0);
@@ -289,12 +291,14 @@ function analyzeKeywords() {
         var cell5 = row.insertCell(4);
 
         cell1.innerHTML = keyword;
-        cell2.innerHTML = density;
+        cell2.innerHTML = exactMatches;
         cell3.innerHTML = 'N/A';
-        cell4.innerHTML = (density / content.split(/\s+/).length * 100).toFixed(2) + '%';
+        cell4.innerHTML = ((exactMatches / totalWordCount) * 100).toFixed(2) + '%'; // Calculate density
         cell5.innerHTML = 'N/A';
     });
 }
+
+
 
 function escapeRegExp(string) {
     // Create a pattern that matches the original keyword and its variations
