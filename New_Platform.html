@@ -113,7 +113,9 @@
 			
 			<div class="keywords">
 			  <textarea id="keywordInput" placeholder="Paste your keywords here"></textarea>
+			  <textarea id="requiredAmountInput" placeholder="Insert required amounts (one per line)" style="display: none;"></textarea>
 			  <button id="addKeywordsBtn">Add Keywords</button>
+			  <button id="addRequiredAmountBtn">Add Required Amount</button>
 			  <button id="analyzeKeywordsBtn" onclick="analyzeKeywords()">Analyze Keywords</button>
 			  <h3>Keyword Results</h3>
 			  <table id="keywordResults">
@@ -122,8 +124,7 @@
 					<th>Keyword</th>
 					<th>Exact Matches</th>
 					<th>Partial Matches</th>
-					<th>Density</th>
-					<th>Density with Partial</th>
+					<th>Required</th>
 				  </tr>
 				</thead>
 				<tbody></tbody>
@@ -188,6 +189,19 @@
                 addKeywordsBtn.textContent = 'Add Keywords';
             }
         });
+		
+		var addRequiredAmountBtn = document.getElementById('addRequiredAmountBtn');
+		var requiredAmountInput = document.getElementById('requiredAmountInput');
+
+		addRequiredAmountBtn.addEventListener('click', function() {
+			if (requiredAmountInput.style.display === 'none') {
+				requiredAmountInput.style.display = 'block';
+				addRequiredAmountBtn.textContent = 'Hide Required Amount';
+			} else {
+				requiredAmountInput.style.display = 'none';
+				addRequiredAmountBtn.textContent = 'Add Required Amount';
+			}
+		});
 
 		function removeTrailingSpaces() {
 			var editor = tinymce.get('tiny');
@@ -262,45 +276,47 @@
 
 			editor.setContent(tempDiv.innerHTML);
 		}
-		
+				
 		function analyzeKeywords() {
-			var editor = tinymce.get('tiny');
-			
-			// Use TinyMCE API to get the word count
-			var totalWordCount = editor.plugins.wordcount.getCount();
+    var editor = tinymce.get('tiny');
+    var totalWordCount = editor.plugins.wordcount.getCount();
+    var keywordInput = document.getElementById('keywordInput');
+    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+    var requiredAmountInput = document.getElementById('requiredAmountInput');
+    var requiredAmounts = requiredAmountInput.value.split('\n').map(amount => parseInt(amount.trim())).filter(amount => !isNaN(amount));
 
-			var keywordInput = document.getElementById('keywordInput');
-			var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+    var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
+    keywordResultsTable.innerHTML = '';
 
-			var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
-			keywordResultsTable.innerHTML = '';
+    keywords.forEach(function(keyword, index) {
+        var escapedKeyword = escapeRegExp(keyword);
+        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
+        var content = editor.getContent({ format: 'text' });
+        var matches = content.match(pattern) || [];
+        var exactMatches = matches.length;
 
-			keywords.forEach(function(keyword) {
-				var escapedKeyword = escapeRegExp(keyword);
-				// Update the regular expression pattern to match whole words and capture partial matches
-				var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
+        var partialMatches = countPartialMatches(content, escapedKeyword);
 
-				var content = editor.getContent({ format: 'text' });
-				var matches = content.match(pattern) || [];
-				var exactMatches = matches.length;
+        var row = keywordResultsTable.insertRow();
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
 
-				// Count partial matches using the helper function
-				var partialMatches = countPartialMatches(content, escapedKeyword);
+        cell1.innerHTML = keyword;
+        cell2.innerHTML = exactMatches + "<br>" + " (" + ((exactMatches / totalWordCount) * 100).toFixed(2) + '%' + ")";
+        cell3.innerHTML = partialMatches - exactMatches + "<br>" + " (" + (partialMatches / totalWordCount * 100).toFixed(2) + '%)';
+        
+        // Add the required amount to the table
+        var requiredAmount = requiredAmounts[index] || 0;
+        cell4.innerHTML = requiredAmount;
 
-				var row = keywordResultsTable.insertRow();
-				var cell1 = row.insertCell(0);
-				var cell2 = row.insertCell(1);
-				var cell3 = row.insertCell(2);
-				var cell4 = row.insertCell(3);
-				var cell5 = row.insertCell(4);
+        // Check if the actual count is within the specified range
+        var countInRange = exactMatches >= requiredAmount;
+        cell4.className = countInRange ? 'count-in-range' : 'count-out-of-range';
+    });
+}
 
-				cell1.innerHTML = keyword;
-				cell2.innerHTML = exactMatches;
-				cell3.innerHTML = partialMatches - exactMatches; // Deduct exact matches from partial matches
-				cell4.innerHTML = ((exactMatches / totalWordCount) * 100).toFixed(2) + '%'; // Calculate density
-				cell5.innerHTML = (partialMatches / totalWordCount * 100).toFixed(2) + '%'; // Density with partial
-			});
-		}
 
 		function countPartialMatches(content, escapedKeyword) {
 			// Update the pattern to capture partial matches before and after the keyword
