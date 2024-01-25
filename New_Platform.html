@@ -332,8 +332,12 @@ function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
     } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
         // Case 3: Required is a Percentage
         addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
+    } else if (typeof requiredAmount === 'object' && requiredAmount.includes('%')) {
+        // Case 4: Required is a Percentage Range
+        addVisualHintForPercentageRange(cell, exactMatches, { percentage: requiredAmount }, totalWordCount);
     }
 }
+
 
 function addVisualHintForInteger(cell, exactMatches, requiredAmount) {
     var difference = Math.abs(exactMatches - requiredAmount);
@@ -371,6 +375,39 @@ function addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWor
         cell.style.backgroundColor = 'red'; // Percentages are different and outside tolerance
     }
 }
+
+function addVisualHintForPercentageRange(cell, exactMatches, requiredAmount, totalWordCount) {
+    // Check if requiredAmount contains a range (e.g., "1%-2%" or "1% - 2%")
+    if (requiredAmount.includes('-')) {
+        // Extract min and max values from the range
+        var rangeValues = requiredAmount.split('-').map(value => parseFloat(value.trim()));
+        var requiredPercentageMin = rangeValues[0];
+        var requiredPercentageMax = rangeValues[1];
+
+        // Calculate the percentage based on exactMatches and totalWordCount
+        var calculatedPercentage = (exactMatches / totalWordCount) * 100;
+
+        if (requiredPercentageMin !== undefined && requiredPercentageMax !== undefined) {
+            // Percentage is within the range
+            if (calculatedPercentage >= requiredPercentageMin && calculatedPercentage <= requiredPercentageMax) {
+                cell.style.backgroundColor = 'green';
+            }
+            // Difference is within +/- 0.5% from the range
+            else if (Math.abs(calculatedPercentage - requiredPercentageMin) <= 0.5 || Math.abs(calculatedPercentage - requiredPercentageMax) <= 0.5) {
+                cell.style.backgroundColor = 'orange';
+            }
+            // Difference is higher than +/- 0.5% from the range
+            else {
+                cell.style.backgroundColor = 'red';
+            }
+        }
+    } else {
+        // Handle single percentage case
+        addVisualHintForPercentage(cell, exactMatches, { percentage: requiredAmount }, totalWordCount);
+    }
+}
+
+
 
 
 
