@@ -322,17 +322,19 @@ function countPartialMatches(content, escapedKeyword) {
 function escapeRegExp(string) {
     // Create a pattern that matches the original keyword and its variations
     var escapedVariations = Array.from(string).map(char => {
+        var baseChar = char;
         if (/[\u0300-\u036f]/.test(char)) {
             // If the character has a diacritic mark, include it as an alternative
-            return char + '[\\u0300-\\u036f]?';
-        } else {
-            // Otherwise, include the character itself
-            return char;
+            baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
         }
+
+        // Include the character and its variations
+        return baseChar + '[\\u0300-\\u036f]*';
     }).join('[\\s\\W]*');
 
     return escapedVariations;
 }
+
 
 
   
