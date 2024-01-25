@@ -316,10 +316,71 @@ function analyzeKeywords() {
         // Check if the actual count is within the specified range
         var countInRange = isCountInRange(exactMatches, requiredAmount);
         cell4.className = countInRange ? 'count-in-range' : 'count-out-of-range';
+
+        // Add visual hints based on comparison
+        addVisualHints(cell4, exactMatches, requiredAmount, totalWordCount);
     });
 }
 
+function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
+    if (typeof requiredAmount === 'number') {
+        // Case 1: Required is an integer
+        addVisualHintForInteger(cell, exactMatches, requiredAmount);
+    } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
+        // Case 2: Required is a Range
+        addVisualHintForRange(cell, exactMatches, requiredAmount);
+    } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
+        // Case 3: Required is a Percentage
+        addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
+    }
+}
+
+function addVisualHintForInteger(cell, exactMatches, requiredAmount) {
+    var difference = Math.abs(exactMatches - requiredAmount);
+
+    if (difference === 0) {
+        cell.style.backgroundColor = 'green'; // Numbers are the same
+    } else if (difference === 1) {
+        cell.style.backgroundColor = 'orange'; // Difference is +/- 1
+    } else {
+        cell.style.backgroundColor = 'red'; // Difference is higher than +/- 1
+    }
+}
+
+function addVisualHintForRange(cell, exactMatches, requiredAmount) {
+    if (exactMatches >= requiredAmount.min && exactMatches <= requiredAmount.max) {
+        cell.style.backgroundColor = 'green'; // Exact match is within the range
+    } else if (Math.abs(exactMatches - requiredAmount.min) === 1 || Math.abs(exactMatches - requiredAmount.max) === 1) {
+        cell.style.backgroundColor = 'orange'; // Difference is +/- 1 from the range
+    } else {
+        cell.style.backgroundColor = 'red'; // Difference is higher than +/- 1 from the range
+    }
+}
+
+function addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount) {
+    var requiredPercentage = (exactMatches / totalWordCount) * 100;
+
+    // Calculate the absolute difference
+    var difference = Math.abs(requiredPercentage - requiredAmount.percentage);
+
+    if (difference <= 0.5) {
+        cell.style.backgroundColor = 'orange'; // Difference is within +/- 0.5%
+    } else if (requiredPercentage.toFixed(2) === requiredAmount.percentage.toFixed(2)) {
+        cell.style.backgroundColor = 'green'; // Percentages are the same
+    } else {
+        cell.style.backgroundColor = 'red'; // Percentages are different and outside tolerance
+    }
+}
+
+
+
 function parseRequiredAmount(entry) {
+
+// Check if the entry is empty
+    if (!entry) {
+        return 1; // Default to 1 if empty
+    }
+	
     // Check if the entry is a percentage
     if (entry.endsWith('%')) {
         var percentage = parseFloat(entry.slice(0, -1));
