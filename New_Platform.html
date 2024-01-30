@@ -8,9 +8,10 @@
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
     ></script>
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/rw00kgcgf2ggfyp0mu3e3upwp7b7f8y6daf38ksflv1g42y3/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
-	<script src="https://cdn.rawgit.com/mathiasbynens/he/a2dde56/he.js"></script>
+    <script src="https://cdn.rawgit.com/mathiasbynens/he/a2dde56/he.js"></script>
 
 	<style>
 		.container {
@@ -18,21 +19,21 @@
             margin-bottom: 20px;
         }
 		
-		.tools-button {
+		.tools-button, stats-button {
             font-size: 16px;
             padding: 10px 20px;
             cursor: pointer;
         }
 		
-		.tools {
+		.tools, .stats {
             display: none;
             margin-top: 10px;
             padding: 10px;
+            text-align: left;
         }
 
-        .tools.show {
+        .tools.show, .stats.show {
             display: block;
-            text-align: left;
         }
 		
 		.return-to-top-button {
@@ -98,11 +99,20 @@
   <body>
     <div class="tools-container">
 		<button class="tools-button" onclick="toggleTools()">Tools</button>
+		<button class="stats-button" onclick="toggleStats()">Stats</button>
 				<div class="tools" id="tools">
 					<button class="fix-spaces" onclick="fixSpaces()">Fix Spaces</button>
 					<button class="empty-paragraphs" onclick="removeEmptyParagraphs()">Remove Empty Paragraphs</button>
 					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
 					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
+				</div>
+				<div class="stats" id="stats">
+					<button id="calculateBtn">Calculate</button>
+					<p id="flesch-kincaid">Flesch-Kincaid Grade Level: <span id="flesch-grade">-</span></p>
+					<p>Total number of keywords: <span id="total-keywords">-</span></p>
+					<p>% of keywords used: <span id="keywords-percentage">-</span></p>
+					<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
+					<p>Link Analysis: <span id="link-analysis">-</span></p>
 				</div>
 		
 		<div class="container">
@@ -166,6 +176,73 @@
 				paste_word_valid_elements: "b,strong,i,em,li,ol,ul"
 				
 		});
+		
+		$(document).ready(function() {
+            $('#calculateBtn').click(function() {
+                calculateFleschKincaidGradeLevel();
+            });
+        });
+
+        function calculateFleschKincaidGradeLevel() {
+    // Get the content from the TinyMCE editor
+    var editor = tinymce.get('tiny');
+    var content = editor.getContent({ format: 'text' }); // Extract plain text content
+
+    // Calculate the Flesch-Kincaid Grade Level
+    var gradeLevel = calculateGradeLevel(content);
+
+    // Display the result
+    $('#flesch-grade').text(gradeLevel);
+}
+
+		
+function calculateGradeLevel(text) {
+    // Remove punctuation and split the text into sentences
+   var sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+    
+    // Initialize variables to store the total number of words and syllables
+    var totalWords = 0;
+    var totalSyllables = 0;
+
+    // Loop through each sentence to count words and syllables
+    sentences.forEach(function(sentence) {
+        // Split the sentence into words
+        var words = sentence.trim().split(/\s+/);
+
+        // Count the number of words in the sentence
+        totalWords += words.length;
+
+        // Count the number of syllables in each word
+        words.forEach(function(word) {
+            totalSyllables += countSyllables(word);
+        });
+    });
+
+    // Calculate the average number of words per sentence
+    var averageWordsPerSentence = totalWords / sentences.length;
+
+    // Calculate the average number of syllables per word
+    var averageSyllablesPerWord = totalSyllables / totalWords;
+
+    // Use the Flesch Reading Ease formula to calculate the score
+    var readingEaseScore = 206.835 - 1.015 * averageWordsPerSentence - 84.6 * averageSyllablesPerWord;
+
+    // Round the score to the nearest integer
+    return Math.round(readingEaseScore);
+}
+
+
+// Function to count the number of syllables in a word
+function countSyllables(word) {
+    // Remove non-alphanumeric characters and convert to lowercase
+    var wordLowerCase = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+
+    // Count the number of vowels (excluding consecutive vowels)
+    var syllables = wordLowerCase.match(/[aeiouy]{1,2}/g);
+
+    // Return the number of syllables (minimum of 1)
+    return Math.max(syllables ? syllables.length : 1, 1);
+}
 	  
 	  function toggleTools() {
         var instructions = document.getElementById('tools');
@@ -174,6 +251,14 @@
         var toolsButton = document.querySelector('.tools-button');
         toolsButton.textContent = instructions.classList.contains('show') ? 'Hide Tools' : 'Tools';
 		}
+		
+		function toggleStats() {
+        var statsArea = document.getElementById('stats');
+        statsArea.classList.toggle('show');
+
+        var statsButton = document.querySelector('.stats-button');
+        statsButton.textContent = statsArea.classList.contains('show') ? 'Hide Stats' : 'Stats';
+    }
 	
 	    var addKeywordsBtn = document.getElementById('addKeywordsBtn');
         var keywordInput = document.getElementById('keywordInput');
@@ -203,7 +288,7 @@
 			}
 		});
 	  
-		function fixSpaces() {
+	  function fixSpaces() {
 			var editor = tinymce.get('tiny');
 			var content = editor.getContent();
 
