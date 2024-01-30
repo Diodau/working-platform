@@ -332,7 +332,7 @@ function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
     } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
         // Case 3: Required is a Percentage
         addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
-    } else if (typeof requiredAmount === 'object' && requiredAmount.includes('%')) {
+    } else if (typeof requiredAmount === 'object' && ('percentage' in requiredAmount)) {
         // Case 4: Required is a Percentage Range
         addVisualHintForPercentageRange(cell, exactMatches, { percentage: requiredAmount }, totalWordCount);
     }
@@ -378,16 +378,15 @@ function addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWor
 
 function addVisualHintForPercentageRange(cell, exactMatches, requiredAmount, totalWordCount) {
     // Check if requiredAmount contains a range (e.g., "1%-2%" or "1% - 2%")
-    if (requiredAmount.includes('-')) {
+    if ('percentageMin' in requiredAmount && 'percentageMax' in requiredAmount) {
         // Extract min and max values from the range
-        var rangeValues = requiredAmount.split('-').map(value => parseFloat(value.trim()));
-        var requiredPercentageMin = rangeValues[0];
-        var requiredPercentageMax = rangeValues[1];
+        var requiredPercentageMin = requiredAmount.percentageMin;
+        var requiredPercentageMax = requiredAmount.percentageMax;
 
         // Calculate the percentage based on exactMatches and totalWordCount
         var calculatedPercentage = (exactMatches / totalWordCount) * 100;
 
-        if (requiredPercentageMin !== undefined && requiredPercentageMax !== undefined) {
+        if (!isNaN(requiredPercentageMin) && !isNaN(requiredPercentageMax)) {
             // Percentage is within the range
             if (calculatedPercentage >= requiredPercentageMin && calculatedPercentage <= requiredPercentageMax) {
                 cell.style.backgroundColor = 'green';
@@ -403,28 +402,32 @@ function addVisualHintForPercentageRange(cell, exactMatches, requiredAmount, tot
         }
     } else {
         // Handle single percentage case
-        addVisualHintForPercentage(cell, exactMatches, { percentage: requiredAmount }, totalWordCount);
+        addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
     }
 }
 
 
-
-
-
 function parseRequiredAmount(entry) {
-
-// Check if the entry is empty
+    // Check if the entry is empty
     if (!entry) {
         return 1; // Default to 1 if empty
     }
-	
+
+    // Check if the entry is a percentage range
+    if (entry.includes('%')) {
+        var rangeValues = entry.split('-').map(val => val.trim());
+        if (rangeValues.length === 2 && !isNaN(parseFloat(rangeValues[0])) && !isNaN(parseFloat(rangeValues[1]))) {
+            return { percentageMin: parseFloat(rangeValues[0]), percentageMax: parseFloat(rangeValues[1]) };
+        }
+    }
+
     // Check if the entry is a percentage
     if (entry.endsWith('%')) {
         var percentage = parseFloat(entry.slice(0, -1));
         return { percentage: percentage };
     }
 
-    // Check if the entry is a range
+    // Check if the entry is an integer range
     if (entry.includes('-')) {
         var rangeValues = entry.split('-').map(val => parseInt(val.trim()));
         if (rangeValues.length === 2 && !isNaN(rangeValues[0]) && !isNaN(rangeValues[1])) {
@@ -436,6 +439,9 @@ function parseRequiredAmount(entry) {
     var intValue = parseInt(entry);
     return isNaN(intValue) ? 0 : intValue;
 }
+
+
+
 
 function formatRequiredAmount(requiredAmount) {
     if (typeof requiredAmount === 'number') {
