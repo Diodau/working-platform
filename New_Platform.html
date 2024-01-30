@@ -99,7 +99,7 @@
     <div class="tools-container">
 		<button class="tools-button" onclick="toggleTools()">Tools</button>
 				<div class="tools" id="tools">
-					<button class="trailing-spaces" onclick="removeTrailingSpaces()">Remove Trailing Spaces</button>
+					<button class="fix-spaces" onclick="fixSpaces()">Fix Spaces</button>
 					<button class="empty-paragraphs" onclick="removeEmptyParagraphs()">Remove Empty Paragraphs</button>
 					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
 					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
@@ -202,20 +202,26 @@
 				addRequiredAmountBtn.textContent = 'Add Required Amount';
 			}
 		});
-
-		function removeTrailingSpaces() {
+	  
+		function fixSpaces() {
 			var editor = tinymce.get('tiny');
 			var content = editor.getContent();
 
-			// Remove trailing spaces at the end of paragraphs or lines, and multiple spaces between words or after punctuation
-			content = content.replace(/(\s*<p>[\s\ufeff]*<\/p>\s*)|(&nbsp;\s*)|(\s+<p>[\s\ufeff]*<\/p>\s*)|(\s*<\/p>\s*)|(\s*<br\s*\/?>\s*)|(\s{2,})/gm, function(match) {
-				return (match.trim().length > 1) ? ' ' : '';
-			});
-			
+			// Remove 2+ whitespace characters between words
+			content = content.replace(/\s{2,}/g, ' ');
+
+			// Remove leading and trailing spaces
+			content = content.trim();
+
 			editor.setContent(content);
 		}
 
+		// Bind the function to the button click event
+		var fixSpacesButton = document.querySelector('.fix-spaces');
+		fixSpacesButton.addEventListener('click', fixSpaces);
 
+	  
+	  
 		// Function to remove empty paragraphs
 		function removeEmptyParagraphs() {
 			var editor = tinymce.get('tiny');
@@ -240,10 +246,6 @@
 
 		// Bind the function to the button click event
 		var removeEmptyParagraphsButton = document.querySelector('.empty-paragraphs');
-		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
-
-
-		removeTrailingSpacesButton.addEventListener('click', removeTrailingSpaces);
 		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
 	
 		function capitalizeHeadings() {
