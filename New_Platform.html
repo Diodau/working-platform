@@ -3,15 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
-       <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/rw00kgcgf2ggfyp0mu3e3upwp7b7f8y6daf38ksflv1g42y3/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
-    <script src="https://cdn.rawgit.com/mathiasbynens/he/a2dde56/he.js"></script>
+
+
 
 	<style>
 		.container {
@@ -108,7 +104,8 @@
 				</div>
 				<div class="stats" id="stats">
 					<button id="calculateBtn">Calculate</button>
-					<p id="flesch-kincaid">Flesch-Kincaid Grade Level: <span id="flesch-grade">-</span></p>
+					<p id="flesch-kincaid">Flesch Reading Ease: <span id="flesch-grade">-</span></p>
+					<p>Flesch Grade: </p>
 					<p>Total number of keywords: <span id="total-keywords">-</span></p>
 					<p>% of keywords used: <span id="keywords-percentage">-</span></p>
 					<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
@@ -148,6 +145,7 @@
 			menubar: false,
 			browser_spellcheck: true,
 			entity_encoding: 'raw', // or 'named'
+			selector: 'textarea#tiny',
 			contextmenu: false,
 			plugins: [
 			  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
@@ -176,73 +174,39 @@
 				paste_word_valid_elements: "b,strong,i,em,li,ol,ul"
 				
 		});
-		
-		$(document).ready(function() {
-            $('#calculateBtn').click(function() {
-                calculateFleschKincaidGradeLevel();
-            });
-        });
-
-        function calculateFleschKincaidGradeLevel() {
-    // Get the content from the TinyMCE editor
+	
+	// Function to calculate Flesch Reading Ease score
+function calculateFleschReadingEase() {
     var editor = tinymce.get('tiny');
-    var content = editor.getContent({ format: 'text' }); // Extract plain text content
+    var content = editor.getContent({ format: 'text' });
 
-    // Calculate the Flesch-Kincaid Grade Level
-    var gradeLevel = calculateGradeLevel(content);
+    // Count words, sentences, and syllables
+    var wordCount = content.split(/\s+/).length;
+    var sentenceCount = content.split(/[.!?]+/).length - 1;
+    var syllableCount = countSyllables(content);
 
-    // Display the result
-    $('#flesch-grade').text(gradeLevel);
+    // Calculate Flesch Reading Ease score
+    var fleschReadingEase = 206.835 - 1.015 * (wordCount / sentenceCount) - 84.6 * (syllableCount / wordCount);
+
+    // Update the Flesch Reading Ease section in stats
+    var fleschGradeElement = document.getElementById('flesch-grade');
+    fleschGradeElement.textContent = fleschReadingEase.toFixed(2);
 }
 
-		
-function calculateGradeLevel(text) {
-    // Remove punctuation and split the text into sentences
-   var sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-    
-    // Initialize variables to store the total number of words and syllables
-    var totalWords = 0;
-    var totalSyllables = 0;
+// Bind the function to the "Calculate" button click event
+var calculateBtn = document.getElementById('calculateBtn');
+calculateBtn.addEventListener('click', calculateFleschReadingEase);
 
-    // Loop through each sentence to count words and syllables
-    sentences.forEach(function(sentence) {
-        // Split the sentence into words
-        var words = sentence.trim().split(/\s+/);
-
-        // Count the number of words in the sentence
-        totalWords += words.length;
-
-        // Count the number of syllables in each word
-        words.forEach(function(word) {
-            totalSyllables += countSyllables(word);
-        });
-    });
-
-    // Calculate the average number of words per sentence
-    var averageWordsPerSentence = totalWords / sentences.length;
-
-    // Calculate the average number of syllables per word
-    var averageSyllablesPerWord = totalSyllables / totalWords;
-
-    // Use the Flesch Reading Ease formula to calculate the score
-    var readingEaseScore = 206.835 - 1.015 * averageWordsPerSentence - 84.6 * averageSyllablesPerWord;
-
-    // Round the score to the nearest integer
-    return Math.round(readingEaseScore);
-}
-
-
-// Function to count the number of syllables in a word
+// Function to count syllables in a word
 function countSyllables(word) {
-    // Remove non-alphanumeric characters and convert to lowercase
-    var wordLowerCase = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-
-    // Count the number of vowels (excluding consecutive vowels)
-    var syllables = wordLowerCase.match(/[aeiouy]{1,2}/g);
-
-    // Return the number of syllables (minimum of 1)
-    return Math.max(syllables ? syllables.length : 1, 1);
+    word = word.toLowerCase().replace(/[^a-z]/g, '');
+    if (word.length <= 3) return 1;
+    word = word.replace(/(?:[^laeiouy]es|ed|lle|[^laeiouy]e)$/, '');
+    word = word.replace(/^y/, '');
+    return word.match(/[aeiouy]{1,2}/g).length;
 }
+
+
 	  
 	  function toggleTools() {
         var instructions = document.getElementById('tools');
