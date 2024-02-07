@@ -107,8 +107,7 @@
 					<p>Flesch Reading Ease: <span id="flesch-ease">-</span></p>
 					<p>Flesch Grade: <span id="flesch-grade"></p>
 					<p>Hemingway Score: <span id="hemingway-score">-</span></p>
-<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
-
+					<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
 					<p>Total number of keywords: <span id="total-keywords">-</span></p>
 					<p>% of keywords used: <span id="keywords-percentage">-</span></p>
 					<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
@@ -178,41 +177,36 @@
 				
 		});
 		
-		function calculateFleschGrade(fleschReadingEase) {
-    var grade = '';
-
-    if (fleschReadingEase >= 90) {
-        grade = '5th grade (Very easy)';
-    } else if (fleschReadingEase >= 80) {
-        grade = '6th grade (Easy)';
-    } else if (fleschReadingEase >= 70) {
-        grade = '7th grade (Fairly easy)';
-    } else if (fleschReadingEase >= 60) {
-        grade = '8th & 9th grade (Standard)';
-    } else if (fleschReadingEase >= 50) {
-        grade = '10th to 12th grade (Fairly difficult)';
-    } else if (fleschReadingEase >= 30) {
-        grade = 'College (Difficult)';
-    } else if (fleschReadingEase >= 10) {
-        grade = 'College graduate (Very difficult)';
-    } else {
-        grade = 'Professional';
-    }
-
-    // Update the Flesch Grade section in stats
-    var fleschGradeElement = document.getElementById('flesch-grade');
-    fleschGradeElement.textContent = grade;
+		function calculateFleschKincaidGrade(words, sentences, syllables) {
+    return 0.39 * (words / sentences) + 11.8 * (syllables / words) - 15.59;
 }
-
 	
-	// Function to calculate Flesch Reading Ease score
 function calculateFleschReadingEase() {
     var editor = tinymce.get('tiny');
     var content = editor.getContent({ format: 'text' });
 
-    // Count words, sentences, and syllables
+    // Segment the content into sentences
+    var sentences = segmentTextIntoSentences(content);
+
+    // Filter out headings and incomplete sentences
+    sentences = sentences.filter(sentence => {
+        // Exclude sentences with less than 5 words
+        if (sentence.split(/\s+/).length < 5) {
+            return false;
+        }
+        // Exclude headings
+        if (isHeading(sentence)) {
+            return false;
+        }
+        // Exclude sentences containing HTML tags
+        if (/<[^>]+>/i.test(sentence)) {
+            return false;
+        }
+        return true;
+    });
+
     var wordCount = content.split(/\s+/).length;
-    var sentenceCount = content.split(/[.!?]+/).length - 1;
+    var sentenceCount = sentences.length;
     var syllableCount = countSyllables(content);
 
     // Calculate Flesch Reading Ease score
@@ -221,12 +215,25 @@ function calculateFleschReadingEase() {
     // Update the Flesch Reading Ease section in stats
     var fleschEaseElement = document.getElementById('flesch-ease');
     fleschEaseElement.textContent = fleschReadingEase.toFixed(2);
-	
-	  // Calculate and display Flesch Grade
-    calculateFleschGrade(fleschReadingEase);
+
+    // Calculate and display Flesch Grade
+    var fleschGrade = calculateFleschKincaidGrade(wordCount, sentenceCount, syllableCount);
+    var fleschGradeElement = document.getElementById('flesch-grade');
+    fleschGradeElement.textContent = fleschGrade.toFixed(2);
 	
 	// Display Hemingway Score (ARI)
     displayHemingwayScore(content);
+}
+
+function segmentTextIntoSentences(text) {
+    // Split text into sentences considering various punctuation marks and line breaks
+    var sentences = text.split(/(?:[.!?:]+|\n+)/);
+    return sentences;
+}
+
+function isHeading(sentence) {
+    // Check if the sentence is a heading (starts with one or more capital letters followed by a space)
+    return /^[A-Z]+\s/.test(sentence);
 }
 
 // Bind the function to the "Calculate" button click event
@@ -243,9 +250,30 @@ function countSyllables(word) {
 }
 
 function calculateARI(content) {
+
+// Segment the content into sentences
+    var sentences = segmentTextIntoSentences(content);
+
+    // Filter out headings and incomplete sentences
+    sentences = sentences.filter(sentence => {
+        // Exclude sentences with less than 5 words
+        if (sentence.split(/\s+/).length < 5) {
+            return false;
+        }
+        // Exclude headings
+        if (isHeading(sentence)) {
+            return false;
+        }
+        // Exclude sentences containing HTML tags
+        if (/<[^>]+>/i.test(sentence)) {
+            return false;
+        }
+        return true;
+    });
+	
     var wordCount = content.split(/\s+/).length;
     var characterCount = content.replace(/[\s\n\t]/g, '').length;
-    var sentenceCount = content.split(/[.!?]+/).length - 1;
+    var sentenceCount = content.split(/[.!?:]+/).length - 1;
 
     var ari = (4.71 * (characterCount / wordCount)) + (0.5 * (wordCount / sentenceCount)) - 21.43;
     return ari;
