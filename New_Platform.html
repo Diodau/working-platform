@@ -85,6 +85,19 @@
             margin-bottom: 20px;
         }
 		
+	.stats-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping to create multiple rows */
+    justify-content: space-between; /* Distribute items evenly between the two columns */
+    gap: 20px; /* Add gap between items */
+}
+
+.stats {
+    flex: 0 0 calc(50% - 10px); /* Specify initial size for each column with some spacing */
+    margin-bottom: 20px; /* Add margin to create space between rows */
+}
+
+		
 		.highlighted-word {
     background-color: yellow;
     /* Other styles for highlighting */
@@ -102,16 +115,17 @@
 					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
 					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
 				</div>
-				<div class="stats" id="stats">
-					<button id="calculateBtn">Calculate</button>
-					<p>Flesch Reading Ease: <span id="flesch-ease">-</span></p>
-					<p>Flesch Grade: <span id="flesch-grade"></p>
-					<p>Hemingway Score: <span id="hemingway-score">-</span></p>
-					<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
-					<p>Total number of keywords: <span id="total-keywords">-</span></p>
-					<p>% of keywords used: <span id="keywords-percentage">-</span></p>
-					<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
-					<p>Link Analysis: <span id="link-analysis">-</span></p>
+					<div class="stats" id="stats">
+						<div class="stats-container">
+							<button id="calculateBtn">Calculate</button>
+							<p>Flesch Reading Ease: <span id="flesch-ease">-</span></p>
+							<p>Flesch Grade: <span id="flesch-grade"></p>
+							<p>Hemingway Score: <span id="hemingway-score">-</span></p>
+							<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
+							<p>Total number of keywords: <span id="total-keywords">-</span></p>
+							<p>% of keywords used: <span id="keywords-percentage">-</span></p>
+							<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
+						</div>
 				</div>
 		
 		<div class="container">
@@ -454,6 +468,8 @@ function analyzeKeywords() {
 
     var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
     keywordResultsTable.innerHTML = '';
+	
+	var totalKeywords = keywords.length; // Calculate total number of keywords
 
     keywords.forEach(function(keyword, index) {
         var escapedKeyword = escapeRegExp(keyword);
@@ -487,6 +503,10 @@ function analyzeKeywords() {
         // Add visual hints based on comparison
         addVisualHints(cell4, exactMatches, requiredAmount, totalWordCount);
     });
+	
+	  // Update the display of total number of keywords in Stats
+    var totalKeywordsElement = document.getElementById('total-keywords');
+    totalKeywordsElement.textContent = totalKeywords;
 }
 
 function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
@@ -577,7 +597,7 @@ function addVisualHintForPercentageRange(cell, exactMatches, requiredAmount, tot
 function parseRequiredAmount(entry) {
     // Check if the entry is empty
     if (!entry) {
-        return 1; // Default to 1 if empty
+        return { min: 1, max: 100 }; // Return range between 1 and 100 if empty
     }
 
     // Check if the entry is a percentage range
@@ -662,6 +682,40 @@ function isCountInRange(count, requiredAmount) {
 
 			return escapedVariations;
 		}
+		
+		function calculateKeywordsPercentage() {
+    var editor = tinymce.get('tiny');
+    var totalWordCount = editor.plugins.wordcount.getCount();
+    var keywordInput = document.getElementById('keywordInput');
+    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+    var requiredAmountInput = document.getElementById('requiredAmountInput');
+    var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
+    var usedKeywordsCount = 0;
+
+    keywords.forEach(function(keyword, index) {
+        var escapedKeyword = escapeRegExp(keyword);
+        var requiredAmount = parseRequiredAmount(requiredAmounts[index]);
+        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
+        var content = editor.getContent({ format: 'text' });
+        var matches = content.match(pattern) || [];
+        var exactMatches = matches.length;
+
+        if (isCountInRange(exactMatches, requiredAmount)) {
+            usedKeywordsCount++;
+        }
+    });
+
+    var keywordsPercentage = (usedKeywordsCount / keywords.length) * 100;
+    var keywordsPercentageElement = document.getElementById('keywords-percentage');
+    keywordsPercentageElement.textContent = keywordsPercentage.toFixed(2) + '%';
+}
+
+// Bind the function to the "Calculate" button click event
+var analyzeKeywordsBtn = document.getElementById('analyzeKeywordsBtn');
+analyzeKeywordsBtn.addEventListener('click', function() {
+    calculateKeywordsPercentage();
+});
+
   
     </script>
   </body>
