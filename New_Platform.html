@@ -319,6 +319,8 @@ function analyzeKeywords() {
     var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
     var requiredAmountInput = document.getElementById('requiredAmountInput');
     var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
+	
+	var content = editor.getContent({ format: 'text' });
 
     var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
     keywordResultsTable.innerHTML = '';
@@ -361,7 +363,55 @@ function analyzeKeywords() {
 	  // Update the display of total number of keywords in Stats
     var totalKeywordsElement = document.getElementById('total-keywords');
     totalKeywordsElement.textContent = totalKeywords;
+	
+	    // Initialize variables to store total distance and number of pairs
+    var totalDistance = 0;
+    var numPairs = 0;
+
+    // Iterate over each keyword
+    for (var i = 0; i < totalKeywords; i++) {
+        var keyword1 = keywords[i];
+        // Trim and escape keyword for regex
+        var escapedKeyword1 = escapeRegExp(keyword1);
+
+        // Nested loop to compare with other keywords
+        for (var j = i + 1; j < totalKeywords; j++) {
+            var keyword2 = keywords[j];
+            // Trim and escape keyword for regex
+            var escapedKeyword2 = escapeRegExp(keyword2);
+
+            // Construct regex to find all occurrences of the pair of keywords
+            var regex = new RegExp(`\\b${escapedKeyword1}\\b(\\s+\\w+\\s+)*?\\b${escapedKeyword2}\\b`, 'gi');
+
+            // Find all matches of the pair in the content
+            var matches = content.matchAll(regex);
+
+            // Iterate over each match to calculate the distance
+            for (const match of matches) {
+                // Calculate the distance between occurrences of the keywords
+                var distance = match[0].split(/\s+/).length - 1;
+
+                // Add distance to total distance
+                totalDistance += distance;
+
+                // Increment the number of pairs
+                numPairs++;
+            }
+        }
+    }
+
+    // Calculate the average keyword proximity
+    var averageProximity = numPairs > 0 ? totalDistance / numPairs : 0;
+
+    console.log("Total distance:", totalDistance);
+    console.log("Number of pairs:", numPairs);
+    console.log("Average proximity:", averageProximity);
+
+    // Display the average keyword proximity in the stats
+    var keywordProximityElement = document.getElementById('keyword-proximity');
+    keywordProximityElement.textContent = averageProximity.toFixed(2);
 }
+
 
 function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
     if (typeof requiredAmount === 'number') {
@@ -570,55 +620,7 @@ analyzeKeywordsBtn.addEventListener('click', function() {
     calculateKeywordsPercentage();
 });
 
-function calculateKeywordProximity() {
-    var editor = tinymce.get('tiny');
-    var content = editor.getContent({ format: 'text' });
-    var keywordInput = document.getElementById('keywordInput');
-    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
 
-    var totalDistance = 0;
-    var totalPairs = 0;
-
-    // Get positions of all occurrences of each keyword
-    var keywordPositions = {};
-    keywords.forEach(keyword => {
-        var pattern = new RegExp('\\b' + escapeRegExp(keyword) + '\\b', 'gi');
-        var matches = content.matchAll(pattern);
-        keywordPositions[keyword] = Array.from(matches, match => match.index);
-    });
-
-    // Calculate distance between each pair of occurrences of different keywords
-    for (var i = 0; i < keywords.length - 1; i++) {
-        for (var j = i + 1; j < keywords.length; j++) {
-            var keyword1 = keywords[i];
-            var keyword2 = keywords[j];
-            var positions1 = keywordPositions[keyword1];
-            var positions2 = keywordPositions[keyword2];
-
-            // Calculate distance between each pair of occurrences
-            for (var pos1 of positions1) {
-                for (var pos2 of positions2) {
-                    var wordsBetween = content.substring(pos1 + keyword1.length, pos2).split(/\s+/).filter(Boolean).length;
-                    totalDistance += wordsBetween;
-                    totalPairs++;
-                }
-            }
-        }
-    }
-
-    // Calculate average distance
-    var averageDistance = totalDistance / totalPairs;
-
-    // Update the Keyword Proximity section in stats
-    var keywordProximityElement = document.getElementById('keyword-proximity');
-    keywordProximityElement.textContent = averageDistance.toFixed(2);
-}
-
-// Bind the function to the "Analyze Keywords" button click event
-var analyzeKeywordsBtn = document.getElementById('analyzeKeywordsBtn');
-analyzeKeywordsBtn.addEventListener('click', function() {
-    calculateKeywordProximity();
-});
 
 // Function to calculate the ARI score
 function calculateARI(characters, words, sentences) {
