@@ -54,6 +54,16 @@
 		  border: 2px solid #ededed;
 		  padding: 1%;
 		}
+		
+		.hemingway-area {
+		  width: 35%;
+		  margin-left: 1%;
+		  border-radius: 11px;
+		  border: 2px solid #ededed;
+		  padding: 1%;
+		  z-index: 999;
+		}
+		
 		.editor {
 		  width: 65%;
 		}
@@ -100,7 +110,37 @@
 		
 		.highlighted-word {
     background-color: yellow;
-    /* Other styles for highlighting */
+}
+
+.adverb {
+  background: #c4e3f3;
+}
+
+.qualifier {
+  background: #c4e3f3;
+}
+
+.passive {
+  background: #c4ed9d;
+}
+
+.complex {
+  background: #e3b7e8;
+}
+
+.hardSentence {
+  background: #f7ecb5;
+}
+
+.veryHardSentence {
+  background: #e4b9b9;
+}
+
+.counter {
+  position: relative;
+  padding: 5% 5%;
+  margin: 5% 0 0 5%;
+  border-radius: 8px;
 }
 
 	</style>
@@ -114,12 +154,12 @@
 					<button class="empty-paragraphs" onclick="removeEmptyParagraphs()">Remove Empty Paragraphs</button>
 					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
 					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
+					<button class="hemingway-tool" onclick="format()">Hemingway Tool</button>
 				</div>
 					<div class="stats" id="stats">
 						<div class="stats-container">
 							<button id="calculateBtn">Calculate</button>
 							<p>ARI Score: <span id="ari-score">-</span></p>
-							<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
 							<p>Total number of keywords: <span id="total-keywords">-</span></p>
 							<p>% of keywords used: <span id="keywords-percentage">-</span></p>
 							<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
@@ -130,6 +170,20 @@
 			
 			<div class="editor">
 				<textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
+				 <div id="output"></div>
+			</div>
+			
+			<div class="hemingway-area" style="display: none;">
+				<div id="right">
+				    <button onclick="format()">Test Me</button>
+					<button onclick="RemoveHemFormat()">Remove Formatting</button>
+					<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
+				    <div id="adverb" class="adverb counter"></div>
+					<div id="passive" class="passive counter"></div>
+					<div id="complex" class="complex counter"></div>
+					<div id="hardSentence" class="hardSentence counter"></div>
+					<div id="veryHardSentence" class="veryHardSentence counter"></div>
+				</div>
 			</div>
 			
 			<div class="keywords">
@@ -281,36 +335,48 @@
 		var removeEmptyParagraphsButton = document.querySelector('.empty-paragraphs');
 		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
 	
-		function capitalizeHeadings() {
-			var editor = tinymce.get('tiny');
-			var content = editor.getContent();
+function capitalizeHeadings() {
+    var editor = tinymce.get('tiny');
+    var content = editor.getContent();
 
-			var tempDiv = document.createElement('div');
-			tempDiv.innerHTML = content;
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
 
-			// Select all headings in the content
-			var headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    // Select all headings in the content
+    var headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
 
-			// List of words to exclude from lowercase (APA style)
-			var excludedWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet', 'ad', 'al', 'allo', 'ai', 'il', 'agli', 'all', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo', 'dai', 'dagli', 'dall', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'dell', 'della', 'delle', 'in', 'un', 'una', 'la', 'lo', 'gli', 'nel', 'nello', 'nei', 'negli', 'nell', 'nella', 'nelle', 'su', 'sul', 'sullo', 'sui', 'sugli', 'sull', 'sulla', 'sulle', 'y', 'e', 'o', 'u', 'con', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'según', 'sin', 'sobre', 'tras', 'ante', 'bajo', 'cabe', 'contra', 'durante', 'mediante', 'excepto', 'salvo', 'toda', 'todas', 'todo', 'todos', 'und', 'oder', 'aber', 'denn', 'doch', 'also', 'nur', 'jedoch', 'weder', 'sowie', 'sodass', 'weil', 'dass', 'obwohl', 'trotzdem', 'falls', 'weiter', 'zwar', 'nämlich', 'ja', 'nein', 'doch', 'denn', 'auch', 'nicht', 'sehr', 'mehr', 'wenig', 'viel', 'a', 'o', 'as', 'os', 'à', 'ao', 'às', 'aos', 'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas', 'por', 'pelo', 'pela', 'pelos', 'pelas', 'com', 'sem', 'sob', 'sobre', 'ante', 'após', 'até', 'contra', 'entre'];
+    // List of words to exclude from lowercase (APA style)
+    var excludedWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet', 'ad', 'al', 'allo', 'ai', 'il', 'agli', 'all', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo', 'dai', 'dagli', 'dall', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'dell', 'della', 'delle', 'in', 'un', 'una', 'la', 'lo', 'gli', 'nel', 'nello', 'nei', 'negli', 'nell', 'nella', 'nelle', 'su', 'sul', 'sullo', 'sui', 'sugli', 'sull', 'sulla', 'sulle', 'y', 'e', 'o', 'u', 'con', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'según', 'sin', 'sobre', 'tras', 'ante', 'bajo', 'cabe', 'contra', 'durante', 'mediante', 'excepto', 'salvo', 'toda', 'todas', 'todo', 'todos', 'und', 'oder', 'aber', 'denn', 'doch', 'also', 'nur', 'jedoch', 'weder', 'sowie', 'sodass', 'weil', 'dass', 'obwohl', 'trotzdem', 'falls', 'weiter', 'zwar', 'nämlich', 'ja', 'nein', 'doch', 'denn', 'auch', 'nicht', 'sehr', 'mehr', 'wenig', 'viel', 'a', 'o', 'as', 'os', 'à', 'ao', 'às', 'aos', 'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas', 'por', 'pelo', 'pela', 'pelos', 'pelas', 'com', 'sem', 'sob', 'sobre', 'ante', 'após', 'até', 'contra', 'entre'];
 
-			// Function to capitalize according to APA style
-			function capitalizeAPA(text) {
-				return text.toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
-					return a.toUpperCase();
-				}).replace(new RegExp('\\b(?:' + excludedWords.join('|') + ')\\b', 'gi'), function (word) {
-					return word.toLowerCase();
-				});
-			}
+    // Function to capitalize according to APA style
+    function capitalizeAPA(text) {
+        return text.toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
+            return a.toUpperCase();
+        }).replace(new RegExp('\\b(?:' + excludedWords.join('|') + ')\\b', 'gi'), function (word) {
+            return word.toLowerCase();
+        });
+    }
 
-			// Loop through headings and apply APA capitalization
-			headings.forEach(function (heading) {
-				var headingText = heading.textContent.trim();
-				heading.textContent = capitalizeAPA(headingText);
-			});
+    // Loop through headings and apply APA capitalization
+    headings.forEach(function (heading) {
+        var headingText = heading.textContent.trim();
+        var words = headingText.split(' ');
 
-			editor.setContent(tempDiv.innerHTML);
-		}
+        for (var i = 0; i < words.length; i++) {
+            if (i === 0 && excludedWords.includes(words[i].toLowerCase())) {
+                words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+            } else {
+                words[i] = capitalizeAPA(words[i]);
+            }
+        }
+
+        heading.textContent = words.join(' ');
+    });
+
+    editor.setContent(tempDiv.innerHTML);
+}
+
+
 				
 function analyzeKeywords() {
     var editor = tinymce.get('tiny');
@@ -363,53 +429,6 @@ function analyzeKeywords() {
 	  // Update the display of total number of keywords in Stats
     var totalKeywordsElement = document.getElementById('total-keywords');
     totalKeywordsElement.textContent = totalKeywords;
-	
-	    // Initialize variables to store total distance and number of pairs
-    var totalDistance = 0;
-    var numPairs = 0;
-
-    // Iterate over each keyword
-    for (var i = 0; i < totalKeywords; i++) {
-        var keyword1 = keywords[i];
-        // Trim and escape keyword for regex
-        var escapedKeyword1 = escapeRegExp(keyword1);
-
-        // Nested loop to compare with other keywords
-        for (var j = i + 1; j < totalKeywords; j++) {
-            var keyword2 = keywords[j];
-            // Trim and escape keyword for regex
-            var escapedKeyword2 = escapeRegExp(keyword2);
-
-            // Construct regex to find all occurrences of the pair of keywords
-            var regex = new RegExp(`\\b${escapedKeyword1}\\b(\\s+\\w+\\s+)*?\\b${escapedKeyword2}\\b`, 'gi');
-
-            // Find all matches of the pair in the content
-            var matches = content.matchAll(regex);
-
-            // Iterate over each match to calculate the distance
-            for (const match of matches) {
-                // Calculate the distance between occurrences of the keywords
-                var distance = match[0].split(/\s+/).length - 1;
-
-                // Add distance to total distance
-                totalDistance += distance;
-
-                // Increment the number of pairs
-                numPairs++;
-            }
-        }
-    }
-
-    // Calculate the average keyword proximity
-    var averageProximity = numPairs > 0 ? totalDistance / numPairs : 0;
-
-    console.log("Total distance:", totalDistance);
-    console.log("Number of pairs:", numPairs);
-    console.log("Average proximity:", averageProximity);
-
-    // Display the average keyword proximity in the stats
-    var keywordProximityElement = document.getElementById('keyword-proximity');
-    keywordProximityElement.textContent = averageProximity.toFixed(2);
 }
 
 
@@ -656,6 +675,104 @@ var calculateBtn = document.getElementById('calculateBtn');
 calculateBtn.addEventListener('click', updateARIScore);
 
 
+function toggleHemingwayTool() {
+    var hemingwayArea = document.querySelector('.hemingway-area');
+    var hemingwayToolButton = document.querySelector('.hemingway-tool');
+
+    if (hemingwayArea.style.display === 'none') {
+        hemingwayArea.style.display = 'block';
+        hemingwayToolButton.textContent = 'Hide Hemingway Tool';
+    } else {
+        hemingwayArea.style.display = 'none';
+        hemingwayToolButton.textContent = 'Hemingway Tool';
+    }
+
+    // Toggle the visibility of the Keyword area as well
+    var keywordArea = document.querySelector('.keywords');
+    keywordArea.style.display = hemingwayArea.style.display === 'block' ? 'none' : 'block';
+}
+
+// Bind the function to the button click event
+var hemingwayToolButton = document.querySelector('.hemingway-tool');
+hemingwayToolButton.addEventListener('click', toggleHemingwayTool);
+
+function findAndHighlightWordRepeats() {
+    console.log("Inside findAndHighlightWordRepeats");
+    var editor = tinymce.get('tiny');
+    var rootNode = editor.getBody();
+    
+    // Create a regex pattern to find repeated words within 10 words with optional characters in between
+    var pattern = /\b(\w{4,})\b(?=(?:\W+\w+){0,10}\W+\1\b)/gi;
+
+    // Function to highlight repeated words within a text node
+    function highlightRepeatedWords(node) {
+        console.log("Inside highlightRepeatedWords");
+        var text = node.nodeValue;
+        var highlightedText = text.replace(pattern, '<span style="background-color:yellow;">$&</span>');
+        if (highlightedText !== text) {
+            var wrapper = document.createElement('span');
+            wrapper.innerHTML = highlightedText;
+            node.parentNode.insertBefore(wrapper, node);
+            node.parentNode.removeChild(node);
+        }
+    }
+
+    // Function to traverse all text nodes within the editor and highlight repeated words
+    function traverseAndHighlight(node) {
+        console.log("Inside traverseAndHighlight");
+        if (node.nodeType === Node.TEXT_NODE) {
+            highlightRepeatedWords(node);
+        } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes) {
+            for (var i = 0; i < node.childNodes.length; i++) {
+                traverseAndHighlight(node.childNodes[i]);
+            }
+        }
+    }
+
+    // Start traversing from the root node
+    traverseAndHighlight(rootNode);
+}
+
+var isHighlightingOn = false; // Track the state of highlighting
+
+function toggleRepetitionHighlighting() {
+    if (isHighlightingOn) {
+        // If highlighting is on, remove the highlighting
+        removeRepetitionHighlighting();
+        isHighlightingOn = false;
+    } else {
+        // If highlighting is off, call the highlighting function
+        findAndHighlightWordRepeats();
+        isHighlightingOn = true;
+    }
+}
+
+// Bind the function to the "Repetition Checker" button click event
+var repetitionCheckerBtn = document.querySelector('.repetition-checker');
+repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
+
+
+function removeRepetitionHighlighting() {
+    var editor = tinymce.get('tiny');
+    var rootNode = editor.getBody();
+
+    // Select all highlighted spans
+    var highlightedSpans = rootNode.querySelectorAll('span[style="background-color:yellow;"]');
+
+    // Replace each highlighted span with its text content
+    highlightedSpans.forEach(function(span) {
+        var textNode = document.createTextNode(span.textContent);
+        span.parentNode.insertBefore(textNode, span);
+        span.parentNode.removeChild(span);
+    });
+
+    // Update highlighting state
+    isHighlightingOn = false;
+}
+
+// Bind the function to the "Repetition Checker" button click event
+var repetitionCheckerBtn = document.querySelector('.repetition-checker');
+repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
 
   
     </script>
