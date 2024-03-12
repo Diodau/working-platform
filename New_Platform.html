@@ -171,6 +171,7 @@
 			
 			<div class="editor">
 				<textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
+				<button class="return-to-top-button" onclick="returnToTop()">Return to top</button>
 				 <div id="output"></div>
 			</div>
 			
@@ -790,6 +791,13 @@ function cleanBulletPoints() {
     });
   });
 }
+
+    function returnToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
     </script>
   </body>
 </html>
