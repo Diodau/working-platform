@@ -150,6 +150,7 @@
 		<button class="tools-button" onclick="toggleTools()">Tools</button>
 		<button class="stats-button" onclick="toggleStats()">Stats</button>
 				<div class="tools" id="tools">
+					<button class="clean-lists" onclick="cleanBulletPoints()">Clean Lists</button>
 					<button class="fix-spaces" onclick="fixSpaces()">Fix Spaces</button>
 					<button class="empty-paragraphs" onclick="removeEmptyParagraphs()">Remove Empty Paragraphs</button>
 					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
@@ -774,7 +775,21 @@ function removeRepetitionHighlighting() {
 var repetitionCheckerBtn = document.querySelector('.repetition-checker');
 repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
 
-  
+function cleanBulletPoints() {
+  var listItems = tinymce.activeEditor.dom.select('ul li, ol li');
+  listItems.forEach(function(listItem) {
+    var paragraphs = listItem.querySelectorAll('p');
+    paragraphs.forEach(function(paragraph) {
+      if (paragraph.parentNode === listItem) {
+        // Move content outside of <p> elements
+        while (paragraph.firstChild) {
+          listItem.appendChild(paragraph.firstChild);
+        }
+        tinymce.activeEditor.dom.remove(paragraph);
+      }
+    });
+  });
+}
     </script>
   </body>
 </html>
