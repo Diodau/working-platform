@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+	<title>Content Management Tool</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -215,7 +216,7 @@
 
             <div class="editor">
                 <textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
-                <button class="return-to-top-button" onclick="returnToTop()">&#x21E7</button>
+                <button class="return-to-top-button" onclick="returnToTop()">&#x21E7;</button>
             </div>
 
             <div class="hemingway-area" style="display: none;">
@@ -336,7 +337,7 @@
             }
         });
 
-        //Remove 2+ whitespace, leading and trailing spaces
+        //Fix Formatting Section
         function fixSpaces() {
             var editor = tinymce.get('tiny');
             var content = editor.getContent();
@@ -352,8 +353,7 @@
 
         var fixSpacesButton = document.querySelector('.clean-lists');
         fixSpacesButton.addEventListener('click', fixSpaces);
-
-        //Fix Formatting Section
+		
 		
         function removeEmptyParagraphs() {
             var editor = tinymce.get('tiny');
@@ -694,6 +694,7 @@
             calculateKeywordsPercentage();
         });
 		
+		
 		//Word Repetition Checker
 		function findAndHighlightWordRepeats() {
             console.log("Inside findAndHighlightWordRepeats");
@@ -868,7 +869,7 @@
 				let inputArea = document.getElementById("tiny");
 				let text = inputArea.value;
 				let paragraphs = text.split("\n");
-				let outputArea = document.getElementById("tiny");
+				/*let outputArea = document.getElementById("tiny");*/
 				let hardSentences = paragraphs.map(p => getDifficultSentences(p));
 				let inP = hardSentences.map(para => `<p>${para}</p>`);
 				data.paragraphs = paragraphs.length;
