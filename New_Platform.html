@@ -10,17 +10,44 @@
 
 
 	<style>
+		* {
+ font-family: Calibri;
+ font-size: 18px;
+}
+		
 		.container {
             text-align: center;
             margin-bottom: 20px;
         }
 		
-		.tools-button, stats-button {
-            font-size: 16px;
+		button {
+		
+  transition-duration: 0.4s;
+  font-size: 18px;
             padding: 10px 20px;
             cursor: pointer;
+			border-radius: 12px;
+			border: #90EE90;
+			background-color: #32CD32;
+			color: black;
+			font-weight: bold;
+}
+
+button:hover {
+  
+  background-color: #F0E68C;
+  color: black;
+}
+		}
+		
+		.tools-button {
+            background-color: #008000;
+			color: white;
+			border-radius: 12px;
+			border: #90EE90;
         }
 		
+
 		.tools, .stats {
             display: none;
             margin-top: 10px;
@@ -34,10 +61,10 @@
 		
 		.return-to-top-button {
             position: fixed;
-            font-size: 12px;
+            font-size: 18px;
             bottom: 10px;
             left: 10px;
-            padding: 10px 20px;
+            padding: 5px 10px;
             cursor: pointer;
             background-color: #cae8ca;
             border: 2px solid #4CAF50;
@@ -143,35 +170,38 @@
   border-radius: 8px;
 }
 
+th {
+	text-align: center;
+}
+
 	</style>
   </head>
   <body>
     <div class="tools-container">
 		<button class="tools-button" onclick="toggleTools()">Tools</button>
 		<button class="stats-button" onclick="toggleStats()">Stats</button>
+		<button>Help</button>
 				<div class="tools" id="tools">
-					<button class="clean-lists" onclick="cleanBulletPoints()">Clean Lists</button>
-					<button class="fix-spaces" onclick="fixSpaces()">Fix Spaces</button>
-					<button class="empty-paragraphs" onclick="removeEmptyParagraphs()">Remove Empty Paragraphs</button>
+					<button class="clean-lists" onclick="cleanBulletPoints()">Fix Formatting</button>
 					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
 					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
 					<button class="hemingway-tool" onclick="format()">Hemingway Tool</button>
 				</div>
-					<div class="stats" id="stats">
-						<div class="stats-container">
-							<button id="calculateBtn">Calculate</button>
-							<p>ARI Score: <span id="ari-score">-</span></p>
-							<p>Total number of keywords: <span id="total-keywords">-</span></p>
-							<p>% of keywords used: <span id="keywords-percentage">-</span></p>
-							<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
-						</div>
+				<div class="stats" id="stats">
+					<div class="stats-container">
+						<button id="calculateBtn">Calculate</button>
+						<p>ARI Score: <span id="ari-score">-</span></p>
+						<p>Total number of keywords: <span id="total-keywords">-</span></p>
+						<p>% of keywords used: <span id="keywords-percentage">-</span></p>
+						<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
+					</div>
 				</div>
 		
 		<div class="container">
 			
 			<div class="editor">
 				<textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
-				<button class="return-to-top-button" onclick="returnToTop()">Return to top</button>
+				<button class="return-to-top-button" onclick="returnToTop()">&#x21E7</button>
 				 <div id="output"></div>
 			</div>
 			
@@ -306,10 +336,8 @@
 		}
 
 		// Bind the function to the button click event
-		var fixSpacesButton = document.querySelector('.fix-spaces');
+		var fixSpacesButton = document.querySelector('.clean-lists');
 		fixSpacesButton.addEventListener('click', fixSpaces);
-
-	  
 	  
 		// Function to remove empty paragraphs
 		function removeEmptyParagraphs() {
@@ -334,8 +362,24 @@
 		}
 
 		// Bind the function to the button click event
-		var removeEmptyParagraphsButton = document.querySelector('.empty-paragraphs');
+		var removeEmptyParagraphsButton = document.querySelector('.clean-lists');
 		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
+		
+		function cleanBulletPoints() {
+  var listItems = tinymce.activeEditor.dom.select('ul li, ol li');
+  listItems.forEach(function(listItem) {
+    var paragraphs = listItem.querySelectorAll('p');
+    paragraphs.forEach(function(paragraph) {
+      if (paragraph.parentNode === listItem) {
+        // Move content outside of <p> elements
+        while (paragraph.firstChild) {
+          listItem.appendChild(paragraph.firstChild);
+        }
+        tinymce.activeEditor.dom.remove(paragraph);
+      }
+    });
+  });
+}
 	
 function capitalizeHeadings() {
     var editor = tinymce.get('tiny');
@@ -775,22 +819,6 @@ function removeRepetitionHighlighting() {
 // Bind the function to the "Repetition Checker" button click event
 var repetitionCheckerBtn = document.querySelector('.repetition-checker');
 repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
-
-function cleanBulletPoints() {
-  var listItems = tinymce.activeEditor.dom.select('ul li, ol li');
-  listItems.forEach(function(listItem) {
-    var paragraphs = listItem.querySelectorAll('p');
-    paragraphs.forEach(function(paragraph) {
-      if (paragraph.parentNode === listItem) {
-        // Move content outside of <p> elements
-        while (paragraph.firstChild) {
-          listItem.appendChild(paragraph.firstChild);
-        }
-        tinymce.activeEditor.dom.remove(paragraph);
-      }
-    });
-  });
-}
 
     function returnToTop() {
         window.scrollTo({
