@@ -1,65 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
-    <script src="https://cdn.tiny.cloud/1/rw00kgcgf2ggfyp0mu3e3upwp7b7f8y6daf38ksflv1g42y3/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/rw00kgcgf2ggfyp0mu3e3upwp7b7f8y6daf38ksflv1g42y3/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
 
 
 
-	<style>
-		* {
- font-family: Calibri;
- font-size: 18px;
-}
-		
-		.container {
+    <style>
+        * {
+            font-family: Calibri;
+            font-size: 18px;
+        }
+
+        .container {
             text-align: center;
             margin-bottom: 20px;
         }
-		
-		button {
-		
-  transition-duration: 0.4s;
-  font-size: 18px;
+
+        button {
+
+            transition-duration: 0.4s;
+            font-size: 18px;
             padding: 10px 20px;
             cursor: pointer;
-			border-radius: 12px;
-			border: #90EE90;
-			background-color: #32CD32;
-			color: black;
-			font-weight: bold;
-}
-
-button:hover {
-  
-  background-color: #F0E68C;
-  color: black;
-}
-		}
-		
-		.tools-button {
-            background-color: #008000;
-			color: white;
-			border-radius: 12px;
-			border: #90EE90;
+            border-radius: 12px;
+            border: #90EE90;
+            background-color: #32CD32;
+            color: black;
+            font-weight: bold;
         }
-		
 
-		.tools, .stats {
+        button:hover {
+
+            background-color: #F0E68C;
+            color: black;
+        }
+        }
+
+        .tools-button {
+            background-color: #008000;
+            color: white;
+            border-radius: 12px;
+            border: #90EE90;
+        }
+
+
+        .tools,
+        .stats {
             display: none;
             margin-top: 10px;
             padding: 10px;
             text-align: left;
         }
 
-        .tools.show, .stats.show {
+        .tools.show,
+        .stats.show {
             display: block;
         }
-		
-		.return-to-top-button {
+
+        .return-to-top-button {
             position: fixed;
             font-size: 18px;
             bottom: 10px;
@@ -70,236 +75,251 @@ button:hover {
             border: 2px solid #4CAF50;
             z-index: 1;
         }
-		.container {
-		  display: flex;
-		  margin-top: 1%;
-		}
-		.keywords {
-		  width: 35%;
-		  margin-left: 1%;
-		  border-radius: 11px;
-		  border: 2px solid #ededed;
-		  padding: 1%;
-		}
-		
-		.hemingway-area {
-		  width: 35%;
-		  margin-left: 1%;
-		  border-radius: 11px;
-		  border: 2px solid #ededed;
-		  padding: 1%;
-		  z-index: 999;
-		}
-		
-		.editor {
-		  width: 65%;
-		}
-		.keywords textarea {
-		  display: none; /* Hide the textarea by default */
-		  width: calc(100% - 20px);
-		  margin-bottom: 10px;
-		  resize: vertical;
-		}
-		.keywords button {
-		  padding: 8px;
-		  cursor: pointer;
-		}
-		table {
-		  border-collapse: collapse;
-		  width: 100%;
-		}
-		th, td {
-		  border: 1px solid black;
-		  padding: 8px;
-		  text-align: left;
-		}
-		th {
-		  background-color: #f2f2f2;
-		}
-		
-		.tools-container {
+
+        .container {
+            display: flex;
+            margin-top: 1%;
+        }
+
+        .keywords {
+            width: 35%;
+            margin-left: 1%;
+            border-radius: 11px;
+            border: 2px solid #ededed;
+            padding: 1%;
+        }
+
+        .hemingway-area {
+            width: 35%;
+            margin-left: 1%;
+            border-radius: 11px;
+            border: 2px solid #ededed;
+            padding: 1%;
+            z-index: 999;
+        }
+
+        .editor {
+            width: 65%;
+        }
+
+        .keywords textarea {
+            display: none;
+            /* Hide the textarea by default */
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .keywords button {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .tools-container {
             text-align: center;
             margin-bottom: 20px;
         }
-		
-	.stats-container {
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping to create multiple rows */
-    justify-content: space-between; /* Distribute items evenly between the two columns */
-    gap: 20px; /* Add gap between items */
-}
 
-.stats {
-    flex: 0 0 calc(50% - 10px); /* Specify initial size for each column with some spacing */
-    margin-bottom: 20px; /* Add margin to create space between rows */
-}
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            /* Allow wrapping to create multiple rows */
+            justify-content: space-between;
+            /* Distribute items evenly between the two columns */
+            gap: 20px;
+            /* Add gap between items */
+        }
 
-		
-		.highlighted-word {
-    background-color: yellow;
-}
+        .stats {
+            flex: 0 0 calc(50% - 10px);
+            /* Specify initial size for each column with some spacing */
+            margin-bottom: 20px;
+            /* Add margin to create space between rows */
+        }
 
-.adverb {
-  background: #c4e3f3;
-}
 
-.qualifier {
-  background: #c4e3f3;
-}
+        .highlighted-word {
+            background-color: yellow;
+        }
 
-.passive {
-  background: #c4ed9d;
-}
+        .adverb {
+            background: #c4e3f3;
+        }
 
-.complex {
-  background: #e3b7e8;
-}
+        .qualifier {
+            background: #c4e3f3;
+        }
 
-.hardSentence {
-  background: #f7ecb5;
-}
+        .passive {
+            background: #c4ed9d;
+        }
 
-.veryHardSentence {
-  background: #e4b9b9;
-}
+        .complex {
+            background: #e3b7e8;
+        }
 
-.counter {
-  position: relative;
-  padding: 5% 5%;
-  margin: 5% 0 0 5%;
-  border-radius: 8px;
-}
+        .hardSentence {
+            background: #f7ecb5;
+        }
 
-th {
-	text-align: center;
-}
+        .veryHardSentence {
+            background: #e4b9b9;
+        }
 
-	</style>
-  </head>
-  <body>
+        .counter {
+            position: relative;
+            padding: 5% 5%;
+            margin: 5% 0 0 5%;
+            border-radius: 8px;
+        }
+
+        th {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
     <div class="tools-container">
-		<button class="tools-button" onclick="toggleTools()">Tools</button>
-		<button class="stats-button" onclick="toggleStats()">Stats</button>
-		<button>Help</button>
-				<div class="tools" id="tools">
-					<button class="clean-lists" onclick="cleanBulletPoints()">Fix Formatting</button>
-					<button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
-					<button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
-					<button class="hemingway-tool" onclick="format()">Hemingway Tool</button>
-				</div>
-				<div class="stats" id="stats">
-					<div class="stats-container">
-						<button id="calculateBtn">Calculate</button>
-						<p>ARI Score: <span id="ari-score">-</span></p>
-						<p>Total number of keywords: <span id="total-keywords">-</span></p>
-						<p>% of keywords used: <span id="keywords-percentage">-</span></p>
-						<p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
-					</div>
-				</div>
-		
-		<div class="container">
-			
-			<div class="editor">
-				<textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
-				<button class="return-to-top-button" onclick="returnToTop()">&#x21E7</button>
-				 <div id="output"></div>
-			</div>
-			
-			<div class="hemingway-area" style="display: none;">
-				<div id="right">
-				    <button onclick="format()">Test Me</button>
-					<button onclick="RemoveHemFormat()">Remove Formatting</button>
-					<p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
-				    <div id="adverb" class="adverb counter"></div>
-					<div id="passive" class="passive counter"></div>
-					<div id="complex" class="complex counter"></div>
-					<div id="hardSentence" class="hardSentence counter"></div>
-					<div id="veryHardSentence" class="veryHardSentence counter"></div>
-				</div>
-			</div>
-			
-			<div class="keywords">
-			  <textarea id="keywordInput" placeholder="Paste your keywords here"></textarea>
-			  <textarea id="requiredAmountInput" placeholder="Insert required amounts (one per line)" style="display: none;"></textarea>
-			  <button id="addKeywordsBtn">Add Keywords</button>
-			  <button id="addRequiredAmountBtn">Add Required Amount</button>
-			  <button id="analyzeKeywordsBtn" onclick="analyzeKeywords()">Analyze Keywords</button>
-			  <h3>Keyword Results</h3>
-			  <table id="keywordResults">
-				<thead>
-				  <tr>
-					<th>Keyword</th>
-					<th>Exact Matches</th>
-					<th>Partial Matches</th>
-					<th>Required</th>
-				  </tr>
-				</thead>
-				<tbody></tbody>
-			  </table>
-			</div>
-		</div>
-	</div>
+        <button class="tools-button" onclick="toggleTools()">Tools</button>
+        <button class="stats-button" onclick="toggleStats()">Stats</button>
+        <button>Help</button>
+        <div class="tools" id="tools">
+            <button class="clean-lists" onclick="cleanBulletPoints()">Fix Formatting</button>
+            <button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
+            <button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
+            <button class="hemingway-tool" onclick="format()">Hemingway Tool</button>
+        </div>
+        <div class="stats" id="stats">
+            <div class="stats-container">
+                <button id="calculateBtn">Calculate</button>
+                <p>ARI Score: <span id="ari-score">-</span></p>
+                <p>Total number of keywords: <span id="total-keywords">-</span></p>
+                <p>% of keywords used: <span id="keywords-percentage">-</span></p>
+                <p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="editor">
+                <textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
+                <button class="return-to-top-button" onclick="returnToTop()">&#x21E7</button>
+                <div id="output"></div>
+            </div>
+
+            <div class="hemingway-area" style="display: none;">
+                <div id="right">
+                    <button onclick="format()">Test Me</button>
+                    <button onclick="RemoveHemFormat()">Remove Formatting</button>
+                    <p>Hemingway Grade: <span id="hemingway-grade">-</span></p>
+                    <div id="adverb" class="adverb counter"></div>
+                    <div id="passive" class="passive counter"></div>
+                    <div id="complex" class="complex counter"></div>
+                    <div id="hardSentence" class="hardSentence counter"></div>
+                    <div id="veryHardSentence" class="veryHardSentence counter"></div>
+                </div>
+            </div>
+
+            <div class="keywords">
+                <textarea id="keywordInput" placeholder="Paste your keywords here"></textarea>
+                <textarea id="requiredAmountInput" placeholder="Insert required amounts (one per line)"
+                    style="display: none;"></textarea>
+                <button id="addKeywordsBtn">Add Keywords</button>
+                <button id="addRequiredAmountBtn">Add Required Amount</button>
+                <button id="analyzeKeywordsBtn" onclick="analyzeKeywords()">Analyze Keywords</button>
+                <h3>Keyword Results</h3>
+                <table id="keywordResults">
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Exact Matches</th>
+                            <th>Partial Matches</th>
+                            <th>Required</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <script>
-      $('textarea#tiny').tinymce({
-			height: 500,
-			menubar: false,
-			browser_spellcheck: true,
-			entity_encoding: 'raw', // or 'named'
-			selector: 'textarea#tiny',
-			contextmenu: false,
-			plugins: [
-			  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-			  'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
-			  'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'paste'
-			],
-			  toolbar: ' blocks | bold italic backcolor | ' +
-			  'alignleft aligncenter alignright alignjustify | ' +
-			  'bullist numlist outdent indent | table | ' +
-			  'link | image | media | ' +
-			  'removeformat | undo redo | wordcount | searchreplace | help',
-			  menu: {
-				file: { title: 'File', items: 'newdocument restoredraft | preview | export | print | deleteallconversations' },
-				edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
-				view: { title: 'View', items: 'code | visualaid visualchars visualblocks | spellchecker | preview fullscreen | showcomments' },
-				insert: { title: 'Insert', items: 'image link media addcomment pageembed template codesample inserttable | charmap emoticons hr | pagebreak nonbreaking anchor tableofcontents | insertdatetime' },
-				format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | language | removeformat' },
-				tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
-				table: { title: 'Table', items: 'inserttable | cell row column | advtablesort | tableprops deletetable' },
-				help: { title: 'Help', items: 'help' }
-			  },
-				menubar: 'favs file edit view insert format tools table help',
-				content_css: 'css/content.css',
-				paste_retain_style_properties: 'all',
-				paste_webkit_styles: 'all',
-				paste_word_valid_elements: "b,strong,i,em,li,ol,ul"
-				
-		});
-		
+        $('textarea#tiny').tinymce({
+            height: 500,
+            menubar: false,
+            browser_spellcheck: true,
+            entity_encoding: 'raw', // or 'named'
+            selector: 'textarea#tiny',
+            contextmenu: false,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'paste'
+            ],
+            toolbar: ' blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | table | ' +
+                'link | image | media | ' +
+                'removeformat | undo redo | wordcount | searchreplace | help',
+            menu: {
+                file: { title: 'File', items: 'newdocument restoredraft | preview | export | print | deleteallconversations' },
+                edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
+                view: { title: 'View', items: 'code | visualaid visualchars visualblocks | spellchecker | preview fullscreen | showcomments' },
+                insert: { title: 'Insert', items: 'image link media addcomment pageembed template codesample inserttable | charmap emoticons hr | pagebreak nonbreaking anchor tableofcontents | insertdatetime' },
+                format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | language | removeformat' },
+                tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
+                table: { title: 'Table', items: 'inserttable | cell row column | advtablesort | tableprops deletetable' },
+                help: { title: 'Help', items: 'help' }
+            },
+            menubar: 'favs file edit view insert format tools table help',
+            content_css: 'css/content.css',
+            paste_retain_style_properties: 'all',
+            paste_webkit_styles: 'all',
+            paste_word_valid_elements: "b,strong,i,em,li,ol,ul"
+
+        });
 
 
-	  
-	  function toggleTools() {
-        var instructions = document.getElementById('tools');
-        instructions.classList.toggle('show');
 
-        var toolsButton = document.querySelector('.tools-button');
-        toolsButton.textContent = instructions.classList.contains('show') ? 'Hide Tools' : 'Tools';
-		}
-		
-		function toggleStats() {
-        var statsArea = document.getElementById('stats');
-        statsArea.classList.toggle('show');
 
-        var statsButton = document.querySelector('.stats-button');
-        statsButton.textContent = statsArea.classList.contains('show') ? 'Hide Stats' : 'Stats';
-    }
-	
-	    var addKeywordsBtn = document.getElementById('addKeywordsBtn');
+        function toggleTools() {
+            var instructions = document.getElementById('tools');
+            instructions.classList.toggle('show');
+
+            var toolsButton = document.querySelector('.tools-button');
+            toolsButton.textContent = instructions.classList.contains('show') ? 'Hide Tools' : 'Tools';
+        }
+
+        function toggleStats() {
+            var statsArea = document.getElementById('stats');
+            statsArea.classList.toggle('show');
+
+            var statsButton = document.querySelector('.stats-button');
+            statsButton.textContent = statsArea.classList.contains('show') ? 'Hide Stats' : 'Stats';
+        }
+
+        var addKeywordsBtn = document.getElementById('addKeywordsBtn');
         var keywordInput = document.getElementById('keywordInput');
-        
-		keywordInput.style.display = 'none';
-		
-        addKeywordsBtn.addEventListener('click', function() {
+
+        keywordInput.style.display = 'none';
+
+        addKeywordsBtn.addEventListener('click', function () {
             if (keywordInput.style.display === 'none') {
                 keywordInput.style.display = 'block';
                 addKeywordsBtn.textContent = 'Hide Keywords';
@@ -308,525 +328,527 @@ th {
                 addKeywordsBtn.textContent = 'Add Keywords';
             }
         });
-		
-		var addRequiredAmountBtn = document.getElementById('addRequiredAmountBtn');
-		var requiredAmountInput = document.getElementById('requiredAmountInput');
 
-		addRequiredAmountBtn.addEventListener('click', function() {
-			if (requiredAmountInput.style.display === 'none') {
-				requiredAmountInput.style.display = 'block';
-				addRequiredAmountBtn.textContent = 'Hide Required Amount';
-			} else {
-				requiredAmountInput.style.display = 'none';
-				addRequiredAmountBtn.textContent = 'Add Required Amount';
-			}
-		});
-	  
-	  function fixSpaces() {
-			var editor = tinymce.get('tiny');
-			var content = editor.getContent();
+        var addRequiredAmountBtn = document.getElementById('addRequiredAmountBtn');
+        var requiredAmountInput = document.getElementById('requiredAmountInput');
 
-			// Remove 2+ whitespace characters between words
-			content = content.replace(/\s{2,}/g, ' ');
-
-			// Remove leading and trailing spaces
-			content = content.trim();
-
-			editor.setContent(content);
-		}
-
-		// Bind the function to the button click event
-		var fixSpacesButton = document.querySelector('.clean-lists');
-		fixSpacesButton.addEventListener('click', fixSpaces);
-	  
-		// Function to remove empty paragraphs
-		function removeEmptyParagraphs() {
-			var editor = tinymce.get('tiny');
-			var content = editor.getContent();
-
-			var tempDiv = document.createElement('div');
-			tempDiv.innerHTML = content;
-
-			// Select all paragraphs in the content
-			var paragraphs = tempDiv.getElementsByTagName('p');
-
-			// Loop through paragraphs and remove empty ones
-			for (var i = paragraphs.length - 1; i >= 0; i--) {
-				var paragraphContent = paragraphs[i].textContent.trim();
-				if (paragraphContent === '') {
-					paragraphs[i].remove();
-				}
-			}
-
-			editor.setContent(tempDiv.innerHTML);
-		}
-
-		// Bind the function to the button click event
-		var removeEmptyParagraphsButton = document.querySelector('.clean-lists');
-		removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
-		
-		function cleanBulletPoints() {
-  var listItems = tinymce.activeEditor.dom.select('ul li, ol li');
-  listItems.forEach(function(listItem) {
-    var paragraphs = listItem.querySelectorAll('p');
-    paragraphs.forEach(function(paragraph) {
-      if (paragraph.parentNode === listItem) {
-        // Move content outside of <p> elements
-        while (paragraph.firstChild) {
-          listItem.appendChild(paragraph.firstChild);
-        }
-        tinymce.activeEditor.dom.remove(paragraph);
-      }
-    });
-  });
-}
-	
-function capitalizeHeadings() {
-    var editor = tinymce.get('tiny');
-    var content = editor.getContent();
-
-    var tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
-
-    // Select all headings in the content
-    var headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
-
-    // List of words to exclude from lowercase (APA style)
-    var excludedWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet', 'ad', 'al', 'allo', 'ai', 'il', 'agli', 'all', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo', 'dai', 'dagli', 'dall', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'dell', 'della', 'delle', 'in', 'un', 'una', 'la', 'lo', 'gli', 'nel', 'nello', 'nei', 'negli', 'nell', 'nella', 'nelle', 'su', 'sul', 'sullo', 'sui', 'sugli', 'sull', 'sulla', 'sulle', 'y', 'e', 'o', 'u', 'con', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'según', 'sin', 'sobre', 'tras', 'ante', 'bajo', 'cabe', 'contra', 'durante', 'mediante', 'excepto', 'salvo', 'toda', 'todas', 'todo', 'todos', 'und', 'oder', 'aber', 'denn', 'doch', 'also', 'nur', 'jedoch', 'weder', 'sowie', 'sodass', 'weil', 'dass', 'obwohl', 'trotzdem', 'falls', 'weiter', 'zwar', 'nämlich', 'ja', 'nein', 'doch', 'denn', 'auch', 'nicht', 'sehr', 'mehr', 'wenig', 'viel', 'a', 'o', 'as', 'os', 'à', 'ao', 'às', 'aos', 'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas', 'por', 'pelo', 'pela', 'pelos', 'pelas', 'com', 'sem', 'sob', 'sobre', 'ante', 'após', 'até', 'contra', 'entre'];
-
-    // Function to capitalize according to APA style
-    function capitalizeAPA(text) {
-        return text.toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
-            return a.toUpperCase();
-        }).replace(new RegExp('\\b(?:' + excludedWords.join('|') + ')\\b', 'gi'), function (word) {
-            return word.toLowerCase();
-        });
-    }
-
-    // Loop through headings and apply APA capitalization
-    headings.forEach(function (heading) {
-        var headingText = heading.textContent.trim();
-        var words = headingText.split(' ');
-
-        for (var i = 0; i < words.length; i++) {
-            if (i === 0 && excludedWords.includes(words[i].toLowerCase())) {
-                words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+        addRequiredAmountBtn.addEventListener('click', function () {
+            if (requiredAmountInput.style.display === 'none') {
+                requiredAmountInput.style.display = 'block';
+                addRequiredAmountBtn.textContent = 'Hide Required Amount';
             } else {
-                words[i] = capitalizeAPA(words[i]);
+                requiredAmountInput.style.display = 'none';
+                addRequiredAmountBtn.textContent = 'Add Required Amount';
             }
-        }
-
-        heading.textContent = words.join(' ');
-    });
-
-    editor.setContent(tempDiv.innerHTML);
-}
-
-
-				
-function analyzeKeywords() {
-    var editor = tinymce.get('tiny');
-    var totalWordCount = editor.plugins.wordcount.getCount();
-    var keywordInput = document.getElementById('keywordInput');
-    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
-    var requiredAmountInput = document.getElementById('requiredAmountInput');
-    var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
-	
-	var content = editor.getContent({ format: 'text' });
-
-    var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
-    keywordResultsTable.innerHTML = '';
-	
-	var totalKeywords = keywords.length; // Calculate total number of keywords
-
-    keywords.forEach(function(keyword, index) {
-        var escapedKeyword = escapeRegExp(keyword);
-
-        // Parse the required amount entry
-        var requiredAmount = parseRequiredAmount(requiredAmounts[index]);
-        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
-        var content = editor.getContent({ format: 'text' });
-        var matches = content.match(pattern) || [];
-        var exactMatches = matches.length;
-
-        var partialMatches = countPartialMatches(content, escapedKeyword);
-
-        var row = keywordResultsTable.insertRow();
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-
-        cell1.innerHTML = keyword;
-        cell2.innerHTML = exactMatches + "<br>" + " (" + ((exactMatches / totalWordCount) * 100).toFixed(2) + '%' + ")";
-        cell3.innerHTML = partialMatches - exactMatches + "<br>" + " (" + (partialMatches / totalWordCount * 100).toFixed(2) + '%)';
-
-        // Add the required amount to the table
-        cell4.innerHTML = formatRequiredAmount(requiredAmount);
-
-        // Check if the actual count is within the specified range
-        var countInRange = isCountInRange(exactMatches, requiredAmount);
-        cell4.className = countInRange ? 'count-in-range' : 'count-out-of-range';
-
-        // Add visual hints based on comparison
-        addVisualHints(cell4, exactMatches, requiredAmount, totalWordCount);
-    });
-	
-	  // Update the display of total number of keywords in Stats
-    var totalKeywordsElement = document.getElementById('total-keywords');
-    totalKeywordsElement.textContent = totalKeywords;
-}
-
-
-function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
-    if (typeof requiredAmount === 'number') {
-        // Case 1: Required is an integer
-        addVisualHintForInteger(cell, exactMatches, requiredAmount);
-    } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
-        // Case 2: Required is a Range
-        addVisualHintForRange(cell, exactMatches, requiredAmount);
-    } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
-        // Case 3: Required is a Percentage
-        addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
-    } else if (typeof requiredAmount === 'object' && ('percentage' in requiredAmount)) {
-        // Case 4: Required is a Percentage Range
-        addVisualHintForPercentageRange(cell, exactMatches, { percentage: requiredAmount }, totalWordCount);
-    }
-}
-
-
-function addVisualHintForInteger(cell, exactMatches, requiredAmount) {
-    var difference = Math.abs(exactMatches - requiredAmount);
-
-    if (difference === 0) {
-        cell.style.backgroundColor = 'green'; // Numbers are the same
-    } else if (difference === 1) {
-        cell.style.backgroundColor = 'orange'; // Difference is +/- 1
-    } else {
-        cell.style.backgroundColor = 'red'; // Difference is higher than +/- 1
-    }
-}
-
-function addVisualHintForRange(cell, exactMatches, requiredAmount) {
-    if (exactMatches >= requiredAmount.min && exactMatches <= requiredAmount.max) {
-        cell.style.backgroundColor = 'green'; // Exact match is within the range
-    } else if (Math.abs(exactMatches - requiredAmount.min) === 1 || Math.abs(exactMatches - requiredAmount.max) === 1) {
-        cell.style.backgroundColor = 'orange'; // Difference is +/- 1 from the range
-    } else {
-        cell.style.backgroundColor = 'red'; // Difference is higher than +/- 1 from the range
-    }
-}
-
-function addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount) {
-    var requiredPercentage = (exactMatches / totalWordCount) * 100;
-
-    // Calculate the absolute difference
-    var difference = Math.abs(requiredPercentage - requiredAmount.percentage);
-
-    if (difference <= 0.5) {
-        cell.style.backgroundColor = 'orange'; // Difference is within +/- 0.5%
-    } else if (requiredPercentage.toFixed(2) === requiredAmount.percentage.toFixed(2)) {
-        cell.style.backgroundColor = 'green'; // Percentages are the same
-    } else {
-        cell.style.backgroundColor = 'red'; // Percentages are different and outside tolerance
-    }
-}
-
-function addVisualHintForPercentageRange(cell, exactMatches, requiredAmount, totalWordCount) {
-    // Check if requiredAmount contains a range (e.g., "1%-2%" or "1% - 2%")
-    if ('percentageMin' in requiredAmount && 'percentageMax' in requiredAmount) {
-        // Extract min and max values from the range
-        var requiredPercentageMin = requiredAmount.percentageMin;
-        var requiredPercentageMax = requiredAmount.percentageMax;
-
-        // Calculate the percentage based on exactMatches and totalWordCount
-        var calculatedPercentage = (exactMatches / totalWordCount) * 100;
-
-        if (!isNaN(requiredPercentageMin) && !isNaN(requiredPercentageMax)) {
-            // Percentage is within the range
-            if (calculatedPercentage >= requiredPercentageMin && calculatedPercentage <= requiredPercentageMax) {
-                cell.style.backgroundColor = 'green';
-            }
-            // Difference is within +/- 0.5% from the range
-            else if (Math.abs(calculatedPercentage - requiredPercentageMin) <= 0.5 || Math.abs(calculatedPercentage - requiredPercentageMax) <= 0.5) {
-                cell.style.backgroundColor = 'orange';
-            }
-            // Difference is higher than +/- 0.5% from the range
-            else {
-                cell.style.backgroundColor = 'red';
-            }
-        }
-    } else {
-        // Handle single percentage case
-        addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
-    }
-}
-
-
-function parseRequiredAmount(entry) {
-    // Check if the entry is empty
-    if (!entry) {
-        return { min: 1, max: 100 }; // Return range between 1 and 100 if empty
-    }
-
-    // Check if the entry is a percentage range
-    if (entry.includes('%')) {
-        var rangeValues = entry.split('-').map(val => val.trim());
-        if (rangeValues.length === 2 && !isNaN(parseFloat(rangeValues[0])) && !isNaN(parseFloat(rangeValues[1]))) {
-            return { percentageMin: parseFloat(rangeValues[0]), percentageMax: parseFloat(rangeValues[1]) };
-        }
-    }
-
-    // Check if the entry is a percentage
-    if (entry.endsWith('%')) {
-        var percentage = parseFloat(entry.slice(0, -1));
-        return { percentage: percentage };
-    }
-
-    // Check if the entry is an integer range
-    if (entry.includes('-')) {
-        var rangeValues = entry.split('-').map(val => parseInt(val.trim()));
-        if (rangeValues.length === 2 && !isNaN(rangeValues[0]) && !isNaN(rangeValues[1])) {
-            return { min: rangeValues[0], max: rangeValues[1] };
-        }
-    }
-
-    // Treat as a single integer
-    var intValue = parseInt(entry);
-    return isNaN(intValue) ? 0 : intValue;
-}
-
-
-
-
-function formatRequiredAmount(requiredAmount) {
-    if (typeof requiredAmount === 'number') {
-        return requiredAmount.toString();
-    } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
-        return requiredAmount.percentage + '%';
-    } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
-        return requiredAmount.min + ' - ' + requiredAmount.max;
-    }
-    return '';
-}
-
-function isCountInRange(count, requiredAmount) {
-    if (typeof requiredAmount === 'number') {
-        return count >= requiredAmount;
-    } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
-        return count >= requiredAmount.min && count <= requiredAmount.max;
-    }
-    return false;
-}
-
-
-
-		function countPartialMatches(content, escapedKeyword) {
-			// Update the pattern to capture partial matches before and after the keyword
-			var partialPattern = new RegExp('(?:\\b|\\W)(' + escapedKeyword + '\\w*' + '|' + '\\w*' + escapedKeyword + '\\w*' + '|' + '\\w*' + escapedKeyword + ')(?:\\b|\\W)', 'giu');
-			var matches = content.match(partialPattern) || [];
-
-			// Extract the captured groups to get the partial matches
-			var partialMatches = matches.map(match => match.trim());
-
-			// Filter out exact matches
-			var exactMatches = partialMatches.filter(partial => partial.toLowerCase() === escapedKeyword.toLowerCase());
-			var filteredPartialMatches = partialMatches.filter(partial => !exactMatches.includes(partial.toLowerCase()));
-
-			return filteredPartialMatches.length;
-		}
-
-		function escapeRegExp(string) {
-			// Create a pattern that matches the original keyword and its variations
-			var escapedVariations = Array.from(string).map(char => {
-				var baseChar = char;
-				if (/[\u0300-\u036f]/.test(char)) {
-					// If the character has a diacritic mark, include it as an alternative
-					baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
-				}
-
-				// Include the character and its variations
-				return baseChar + '[\\u0300-\\u036f]*';
-			}).join('[\\s\\W]*');
-
-			return escapedVariations;
-		}
-		
-		function calculateKeywordsPercentage() {
-    var editor = tinymce.get('tiny');
-    var totalWordCount = editor.plugins.wordcount.getCount();
-    var keywordInput = document.getElementById('keywordInput');
-    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
-    var requiredAmountInput = document.getElementById('requiredAmountInput');
-    var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
-    var usedKeywordsCount = 0;
-
-    keywords.forEach(function(keyword, index) {
-        var escapedKeyword = escapeRegExp(keyword);
-        var requiredAmount = parseRequiredAmount(requiredAmounts[index]);
-        var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
-        var content = editor.getContent({ format: 'text' });
-        var matches = content.match(pattern) || [];
-        var exactMatches = matches.length;
-
-        if (isCountInRange(exactMatches, requiredAmount)) {
-            usedKeywordsCount++;
-        }
-    });
-
-    var keywordsPercentage = (usedKeywordsCount / keywords.length) * 100;
-    var keywordsPercentageElement = document.getElementById('keywords-percentage');
-    keywordsPercentageElement.textContent = keywordsPercentage.toFixed(2) + '%';
-}
-
-// Bind the function to the "Calculate" button click event
-var analyzeKeywordsBtn = document.getElementById('analyzeKeywordsBtn');
-analyzeKeywordsBtn.addEventListener('click', function() {
-    calculateKeywordsPercentage();
-});
-
-
-
-// Function to calculate the ARI score
-function calculateARI(characters, words, sentences) {
-    return 4.71 * (characters / words) + 0.5 * (words / sentences) - 21.43;
-}
-
-// Function to count the number of sentences
-function countSentences(content) {
-    // Split the content into sentences using punctuation marks as delimiters
-    var sentences = content.match(/[^.!?]+[.!?]+/g);
-    return sentences ? sentences.length : 0;
-}
-
-// Function to extract characters and words count from TinyMCE editor
-function extractEditorStats() {
-    var editor = tinymce.get('tiny');
-    var content = editor.getContent({ format: 'text' });
-    var characters = content.length;
-    var words = editor.plugins.wordcount.getCount();
-    var sentences = countSentences(content);
-    return { characters: characters, words: words, sentences: sentences };
-}
-
-// Function to update the ARI score display
-function updateARIScore() {
-    var editorStats = extractEditorStats();
-    var ariScore = calculateARI(editorStats.characters, editorStats.words, editorStats.sentences);
-    document.getElementById('ari-score').textContent = ariScore.toFixed(2);
-}
-
-// Bind the updateARIScore function to the button click event
-var calculateBtn = document.getElementById('calculateBtn');
-calculateBtn.addEventListener('click', updateARIScore);
-
-
-function toggleHemingwayTool() {
-    var hemingwayArea = document.querySelector('.hemingway-area');
-    var hemingwayToolButton = document.querySelector('.hemingway-tool');
-
-    if (hemingwayArea.style.display === 'none') {
-        hemingwayArea.style.display = 'block';
-        hemingwayToolButton.textContent = 'Hide Hemingway Tool';
-    } else {
-        hemingwayArea.style.display = 'none';
-        hemingwayToolButton.textContent = 'Hemingway Tool';
-    }
-
-    // Toggle the visibility of the Keyword area as well
-    var keywordArea = document.querySelector('.keywords');
-    keywordArea.style.display = hemingwayArea.style.display === 'block' ? 'none' : 'block';
-}
-
-// Bind the function to the button click event
-var hemingwayToolButton = document.querySelector('.hemingway-tool');
-hemingwayToolButton.addEventListener('click', toggleHemingwayTool);
-
-function findAndHighlightWordRepeats() {
-    console.log("Inside findAndHighlightWordRepeats");
-    var editor = tinymce.get('tiny');
-    var rootNode = editor.getBody();
-    
-    // Create a regex pattern to find repeated words within 10 words with optional characters in between
-    var pattern = /\b(\w{4,})\b(?=(?:\W+\w+){0,10}\W+\1\b)/gi;
-
-    // Function to highlight repeated words within a text node
-    function highlightRepeatedWords(node) {
-        console.log("Inside highlightRepeatedWords");
-        var text = node.nodeValue;
-        var highlightedText = text.replace(pattern, '<span style="background-color:yellow;">$&</span>');
-        if (highlightedText !== text) {
-            var wrapper = document.createElement('span');
-            wrapper.innerHTML = highlightedText;
-            node.parentNode.insertBefore(wrapper, node);
-            node.parentNode.removeChild(node);
-        }
-    }
-
-    // Function to traverse all text nodes within the editor and highlight repeated words
-    function traverseAndHighlight(node) {
-        console.log("Inside traverseAndHighlight");
-        if (node.nodeType === Node.TEXT_NODE) {
-            highlightRepeatedWords(node);
-        } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes) {
-            for (var i = 0; i < node.childNodes.length; i++) {
-                traverseAndHighlight(node.childNodes[i]);
-            }
-        }
-    }
-
-    // Start traversing from the root node
-    traverseAndHighlight(rootNode);
-}
-
-var isHighlightingOn = false; // Track the state of highlighting
-
-function toggleRepetitionHighlighting() {
-    if (isHighlightingOn) {
-        // If highlighting is on, remove the highlighting
-        removeRepetitionHighlighting();
-        isHighlightingOn = false;
-    } else {
-        // If highlighting is off, call the highlighting function
-        findAndHighlightWordRepeats();
-        isHighlightingOn = true;
-    }
-}
-
-// Bind the function to the "Repetition Checker" button click event
-var repetitionCheckerBtn = document.querySelector('.repetition-checker');
-repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
-
-
-function removeRepetitionHighlighting() {
-    var editor = tinymce.get('tiny');
-    var rootNode = editor.getBody();
-
-    // Select all highlighted spans
-    var highlightedSpans = rootNode.querySelectorAll('span[style="background-color:yellow;"]');
-
-    // Replace each highlighted span with its text content
-    highlightedSpans.forEach(function(span) {
-        var textNode = document.createTextNode(span.textContent);
-        span.parentNode.insertBefore(textNode, span);
-        span.parentNode.removeChild(span);
-    });
-
-    // Update highlighting state
-    isHighlightingOn = false;
-}
-
-// Bind the function to the "Repetition Checker" button click event
-var repetitionCheckerBtn = document.querySelector('.repetition-checker');
-repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
-
-    function returnToTop() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
         });
-    }
+
+        //Remove 2+ whitespace, leading and trailing spaces
+        function fixSpaces() {
+            var editor = tinymce.get('tiny');
+            var content = editor.getContent();
+
+            // Remove 2+ whitespace characters between words
+            content = content.replace(/\s{2,}/g, ' ');
+
+            // Remove leading and trailing spaces
+            content = content.trim();
+
+            editor.setContent(content);
+        }
+
+        // Bind the function to the button click event
+        var fixSpacesButton = document.querySelector('.clean-lists');
+        fixSpacesButton.addEventListener('click', fixSpaces);
+
+        // Function to remove empty paragraphs
+        function removeEmptyParagraphs() {
+            var editor = tinymce.get('tiny');
+            var content = editor.getContent();
+
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+
+            // Select all paragraphs in the content
+            var paragraphs = tempDiv.getElementsByTagName('p');
+
+            // Loop through paragraphs and remove empty ones
+            for (var i = paragraphs.length - 1; i >= 0; i--) {
+                var paragraphContent = paragraphs[i].textContent.trim();
+                if (paragraphContent === '') {
+                    paragraphs[i].remove();
+                }
+            }
+
+            editor.setContent(tempDiv.innerHTML);
+        }
+
+        // Bind the function to the button click event
+        var removeEmptyParagraphsButton = document.querySelector('.clean-lists');
+        removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
+
+        function cleanBulletPoints() {
+            var listItems = tinymce.activeEditor.dom.select('ul li, ol li');
+            listItems.forEach(function (listItem) {
+                var paragraphs = listItem.querySelectorAll('p');
+                paragraphs.forEach(function (paragraph) {
+                    if (paragraph.parentNode === listItem) {
+                        // Move content outside of <p> elements
+                        while (paragraph.firstChild) {
+                            listItem.appendChild(paragraph.firstChild);
+                        }
+                        tinymce.activeEditor.dom.remove(paragraph);
+                    }
+                });
+            });
+        }
+
+        function capitalizeHeadings() {
+            var editor = tinymce.get('tiny');
+            var content = editor.getContent();
+
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+
+            // Select all headings in the content
+            var headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+            // List of words to exclude from lowercase (APA style)
+            var excludedWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet', 'ad', 'al', 'allo', 'ai', 'il', 'agli', 'all', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo', 'dai', 'dagli', 'dall', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'dell', 'della', 'delle', 'in', 'un', 'una', 'la', 'lo', 'gli', 'nel', 'nello', 'nei', 'negli', 'nell', 'nella', 'nelle', 'su', 'sul', 'sullo', 'sui', 'sugli', 'sull', 'sulla', 'sulle', 'y', 'e', 'o', 'u', 'con', 'de', 'desde', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'según', 'sin', 'sobre', 'tras', 'ante', 'bajo', 'cabe', 'contra', 'durante', 'mediante', 'excepto', 'salvo', 'toda', 'todas', 'todo', 'todos', 'und', 'oder', 'aber', 'denn', 'doch', 'also', 'nur', 'jedoch', 'weder', 'sowie', 'sodass', 'weil', 'dass', 'obwohl', 'trotzdem', 'falls', 'weiter', 'zwar', 'nämlich', 'ja', 'nein', 'doch', 'denn', 'auch', 'nicht', 'sehr', 'mehr', 'wenig', 'viel', 'a', 'o', 'as', 'os', 'à', 'ao', 'às', 'aos', 'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas', 'por', 'pelo', 'pela', 'pelos', 'pelas', 'com', 'sem', 'sob', 'sobre', 'ante', 'após', 'até', 'contra', 'entre'];
+
+            // Function to capitalize according to APA style
+            function capitalizeAPA(text) {
+                return text.toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
+                    return a.toUpperCase();
+                }).replace(new RegExp('\\b(?:' + excludedWords.join('|') + ')\\b', 'gi'), function (word) {
+                    return word.toLowerCase();
+                });
+            }
+
+            // Loop through headings and apply APA capitalization
+            headings.forEach(function (heading) {
+                var headingText = heading.textContent.trim();
+                var words = headingText.split(' ');
+
+                for (var i = 0; i < words.length; i++) {
+                    if (i === 0 && excludedWords.includes(words[i].toLowerCase())) {
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+                    } else {
+                        words[i] = capitalizeAPA(words[i]);
+                    }
+                }
+
+                heading.textContent = words.join(' ');
+            });
+
+            editor.setContent(tempDiv.innerHTML);
+        }
+
+
+
+        function analyzeKeywords() {
+            var editor = tinymce.get('tiny');
+            var totalWordCount = editor.plugins.wordcount.getCount();
+            var keywordInput = document.getElementById('keywordInput');
+            var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+            var requiredAmountInput = document.getElementById('requiredAmountInput');
+            var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
+
+            var content = editor.getContent({ format: 'text' });
+
+            var keywordResultsTable = document.getElementById('keywordResults').getElementsByTagName('tbody')[0];
+            keywordResultsTable.innerHTML = '';
+
+            var totalKeywords = keywords.length; // Calculate total number of keywords
+
+            keywords.forEach(function (keyword, index) {
+                var escapedKeyword = escapeRegExp(keyword);
+
+                // Parse the required amount entry
+                var requiredAmount = parseRequiredAmount(requiredAmounts[index]);
+                var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
+                var content = editor.getContent({ format: 'text' });
+                var matches = content.match(pattern) || [];
+                var exactMatches = matches.length;
+
+                var partialMatches = countPartialMatches(content, escapedKeyword);
+
+                var row = keywordResultsTable.insertRow();
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+
+                cell1.innerHTML = keyword;
+                cell2.innerHTML = exactMatches + "<br>" + " (" + ((exactMatches / totalWordCount) * 100).toFixed(2) + '%' + ")";
+                cell3.innerHTML = partialMatches - exactMatches + "<br>" + " (" + (partialMatches / totalWordCount * 100).toFixed(2) + '%)';
+
+                // Add the required amount to the table
+                cell4.innerHTML = formatRequiredAmount(requiredAmount);
+
+                // Check if the actual count is within the specified range
+                var countInRange = isCountInRange(exactMatches, requiredAmount);
+                cell4.className = countInRange ? 'count-in-range' : 'count-out-of-range';
+
+                // Add visual hints based on comparison
+                addVisualHints(cell4, exactMatches, requiredAmount, totalWordCount);
+            });
+
+            // Update the display of total number of keywords in Stats
+            var totalKeywordsElement = document.getElementById('total-keywords');
+            totalKeywordsElement.textContent = totalKeywords;
+        }
+
+
+        function addVisualHints(cell, exactMatches, requiredAmount, totalWordCount) {
+            if (typeof requiredAmount === 'number') {
+                // Case 1: Required is an integer
+                addVisualHintForInteger(cell, exactMatches, requiredAmount);
+            } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
+                // Case 2: Required is a Range
+                addVisualHintForRange(cell, exactMatches, requiredAmount);
+            } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
+                // Case 3: Required is a Percentage
+                addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
+            } else if (typeof requiredAmount === 'object' && ('percentage' in requiredAmount)) {
+                // Case 4: Required is a Percentage Range
+                addVisualHintForPercentageRange(cell, exactMatches, { percentage: requiredAmount }, totalWordCount);
+            }
+        }
+
+
+        function addVisualHintForInteger(cell, exactMatches, requiredAmount) {
+            var difference = Math.abs(exactMatches - requiredAmount);
+
+            if (difference === 0) {
+                cell.style.backgroundColor = 'green'; // Numbers are the same
+            } else if (difference === 1) {
+                cell.style.backgroundColor = 'orange'; // Difference is +/- 1
+            } else {
+                cell.style.backgroundColor = 'red'; // Difference is higher than +/- 1
+            }
+        }
+
+        function addVisualHintForRange(cell, exactMatches, requiredAmount) {
+            if (exactMatches >= requiredAmount.min && exactMatches <= requiredAmount.max) {
+                cell.style.backgroundColor = 'green'; // Exact match is within the range
+            } else if (Math.abs(exactMatches - requiredAmount.min) === 1 || Math.abs(exactMatches - requiredAmount.max) === 1) {
+                cell.style.backgroundColor = 'orange'; // Difference is +/- 1 from the range
+            } else {
+                cell.style.backgroundColor = 'red'; // Difference is higher than +/- 1 from the range
+            }
+        }
+
+        function addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount) {
+            var requiredPercentage = (exactMatches / totalWordCount) * 100;
+
+            // Calculate the absolute difference
+            var difference = Math.abs(requiredPercentage - requiredAmount.percentage);
+
+            if (difference <= 0.5) {
+                cell.style.backgroundColor = 'orange'; // Difference is within +/- 0.5%
+            } else if (requiredPercentage.toFixed(2) === requiredAmount.percentage.toFixed(2)) {
+                cell.style.backgroundColor = 'green'; // Percentages are the same
+            } else {
+                cell.style.backgroundColor = 'red'; // Percentages are different and outside tolerance
+            }
+        }
+
+        function addVisualHintForPercentageRange(cell, exactMatches, requiredAmount, totalWordCount) {
+            // Check if requiredAmount contains a range (e.g., "1%-2%" or "1% - 2%")
+            if ('percentageMin' in requiredAmount && 'percentageMax' in requiredAmount) {
+                // Extract min and max values from the range
+                var requiredPercentageMin = requiredAmount.percentageMin;
+                var requiredPercentageMax = requiredAmount.percentageMax;
+
+                // Calculate the percentage based on exactMatches and totalWordCount
+                var calculatedPercentage = (exactMatches / totalWordCount) * 100;
+
+                if (!isNaN(requiredPercentageMin) && !isNaN(requiredPercentageMax)) {
+                    // Percentage is within the range
+                    if (calculatedPercentage >= requiredPercentageMin && calculatedPercentage <= requiredPercentageMax) {
+                        cell.style.backgroundColor = 'green';
+                    }
+                    // Difference is within +/- 0.5% from the range
+                    else if (Math.abs(calculatedPercentage - requiredPercentageMin) <= 0.5 || Math.abs(calculatedPercentage - requiredPercentageMax) <= 0.5) {
+                        cell.style.backgroundColor = 'orange';
+                    }
+                    // Difference is higher than +/- 0.5% from the range
+                    else {
+                        cell.style.backgroundColor = 'red';
+                    }
+                }
+            } else {
+                // Handle single percentage case
+                addVisualHintForPercentage(cell, exactMatches, requiredAmount, totalWordCount);
+            }
+        }
+
+
+        function parseRequiredAmount(entry) {
+            // Check if the entry is empty
+            if (!entry) {
+                return { min: 1, max: 100 }; // Return range between 1 and 100 if empty
+            }
+
+            // Check if the entry is a percentage range
+            if (entry.includes('%')) {
+                var rangeValues = entry.split('-').map(val => val.trim());
+                if (rangeValues.length === 2 && !isNaN(parseFloat(rangeValues[0])) && !isNaN(parseFloat(rangeValues[1]))) {
+                    return { percentageMin: parseFloat(rangeValues[0]), percentageMax: parseFloat(rangeValues[1]) };
+                }
+            }
+
+            // Check if the entry is a percentage
+            if (entry.endsWith('%')) {
+                var percentage = parseFloat(entry.slice(0, -1));
+                return { percentage: percentage };
+            }
+
+            // Check if the entry is an integer range
+            if (entry.includes('-')) {
+                var rangeValues = entry.split('-').map(val => parseInt(val.trim()));
+                if (rangeValues.length === 2 && !isNaN(rangeValues[0]) && !isNaN(rangeValues[1])) {
+                    return { min: rangeValues[0], max: rangeValues[1] };
+                }
+            }
+
+            // Treat as a single integer
+            var intValue = parseInt(entry);
+            return isNaN(intValue) ? 0 : intValue;
+        }
+
+
+
+
+        function formatRequiredAmount(requiredAmount) {
+            if (typeof requiredAmount === 'number') {
+                return requiredAmount.toString();
+            } else if (typeof requiredAmount === 'object' && requiredAmount.percentage !== undefined) {
+                return requiredAmount.percentage + '%';
+            } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
+                return requiredAmount.min + ' - ' + requiredAmount.max;
+            }
+            return '';
+        }
+
+        function isCountInRange(count, requiredAmount) {
+            if (typeof requiredAmount === 'number') {
+                return count >= requiredAmount;
+            } else if (typeof requiredAmount === 'object' && requiredAmount.min !== undefined && requiredAmount.max !== undefined) {
+                return count >= requiredAmount.min && count <= requiredAmount.max;
+            }
+            return false;
+        }
+
+
+
+        function countPartialMatches(content, escapedKeyword) {
+            // Update the pattern to capture partial matches before and after the keyword
+            var partialPattern = new RegExp('(?:\\b|\\W)(' + escapedKeyword + '\\w*' + '|' + '\\w*' + escapedKeyword + '\\w*' + '|' + '\\w*' + escapedKeyword + ')(?:\\b|\\W)', 'giu');
+            var matches = content.match(partialPattern) || [];
+
+            // Extract the captured groups to get the partial matches
+            var partialMatches = matches.map(match => match.trim());
+
+            // Filter out exact matches
+            var exactMatches = partialMatches.filter(partial => partial.toLowerCase() === escapedKeyword.toLowerCase());
+            var filteredPartialMatches = partialMatches.filter(partial => !exactMatches.includes(partial.toLowerCase()));
+
+            return filteredPartialMatches.length;
+        }
+
+        function escapeRegExp(string) {
+            // Create a pattern that matches the original keyword and its variations
+            var escapedVariations = Array.from(string).map(char => {
+                var baseChar = char;
+                if (/[\u0300-\u036f]/.test(char)) {
+                    // If the character has a diacritic mark, include it as an alternative
+                    baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
+                }
+
+                // Include the character and its variations
+                return baseChar + '[\\u0300-\\u036f]*';
+            }).join('[\\s\\W]*');
+
+            return escapedVariations;
+        }
+
+        function calculateKeywordsPercentage() {
+            var editor = tinymce.get('tiny');
+            var totalWordCount = editor.plugins.wordcount.getCount();
+            var keywordInput = document.getElementById('keywordInput');
+            var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+            var requiredAmountInput = document.getElementById('requiredAmountInput');
+            var requiredAmounts = requiredAmountInput.value.split('\n').map(entry => entry.trim()).filter(Boolean);
+            var usedKeywordsCount = 0;
+
+            keywords.forEach(function (keyword, index) {
+                var escapedKeyword = escapeRegExp(keyword);
+                var requiredAmount = parseRequiredAmount(requiredAmounts[index]);
+                var pattern = new RegExp('(?:\\b|\\W)' + escapedKeyword + '(?:\\b|\\W)', 'gi');
+                var content = editor.getContent({ format: 'text' });
+                var matches = content.match(pattern) || [];
+                var exactMatches = matches.length;
+
+                if (isCountInRange(exactMatches, requiredAmount)) {
+                    usedKeywordsCount++;
+                }
+            });
+
+            var keywordsPercentage = (usedKeywordsCount / keywords.length) * 100;
+            var keywordsPercentageElement = document.getElementById('keywords-percentage');
+            keywordsPercentageElement.textContent = keywordsPercentage.toFixed(2) + '%';
+        }
+
+        // Bind the function to the "Calculate" button click event
+        var analyzeKeywordsBtn = document.getElementById('analyzeKeywordsBtn');
+        analyzeKeywordsBtn.addEventListener('click', function () {
+            calculateKeywordsPercentage();
+        });
+
+
+
+        // Function to calculate the ARI score
+        function calculateARI(characters, words, sentences) {
+            return 4.71 * (characters / words) + 0.5 * (words / sentences) - 21.43;
+        }
+
+        // Function to count the number of sentences
+        function countSentences(content) {
+            // Split the content into sentences using punctuation marks as delimiters
+            var sentences = content.match(/[^.!?]+[.!?]+/g);
+            return sentences ? sentences.length : 0;
+        }
+
+        // Function to extract characters and words count from TinyMCE editor
+        function extractEditorStats() {
+            var editor = tinymce.get('tiny');
+            var content = editor.getContent({ format: 'text' });
+            var characters = content.length;
+            var words = editor.plugins.wordcount.getCount();
+            var sentences = countSentences(content);
+            return { characters: characters, words: words, sentences: sentences };
+        }
+
+        // Function to update the ARI score display
+        function updateARIScore() {
+            var editorStats = extractEditorStats();
+            var ariScore = calculateARI(editorStats.characters, editorStats.words, editorStats.sentences);
+            document.getElementById('ari-score').textContent = ariScore.toFixed(2);
+        }
+
+        // Bind the updateARIScore function to the button click event
+        var calculateBtn = document.getElementById('calculateBtn');
+        calculateBtn.addEventListener('click', updateARIScore);
+
+
+        function toggleHemingwayTool() {
+            var hemingwayArea = document.querySelector('.hemingway-area');
+            var hemingwayToolButton = document.querySelector('.hemingway-tool');
+
+            if (hemingwayArea.style.display === 'none') {
+                hemingwayArea.style.display = 'block';
+                hemingwayToolButton.textContent = 'Hide Hemingway Tool';
+            } else {
+                hemingwayArea.style.display = 'none';
+                hemingwayToolButton.textContent = 'Hemingway Tool';
+            }
+
+            // Toggle the visibility of the Keyword area as well
+            var keywordArea = document.querySelector('.keywords');
+            keywordArea.style.display = hemingwayArea.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Bind the function to the button click event
+        var hemingwayToolButton = document.querySelector('.hemingway-tool');
+        hemingwayToolButton.addEventListener('click', toggleHemingwayTool);
+
+        function findAndHighlightWordRepeats() {
+            console.log("Inside findAndHighlightWordRepeats");
+            var editor = tinymce.get('tiny');
+            var rootNode = editor.getBody();
+
+            // Create a regex pattern to find repeated words within 10 words with optional characters in between
+            var pattern = /\b(\w{4,})\b(?=(?:\W+\w+){0,10}\W+\1\b)/gi;
+
+            // Function to highlight repeated words within a text node
+            function highlightRepeatedWords(node) {
+                console.log("Inside highlightRepeatedWords");
+                var text = node.nodeValue;
+                var highlightedText = text.replace(pattern, '<span style="background-color:yellow;">$&</span>');
+                if (highlightedText !== text) {
+                    var wrapper = document.createElement('span');
+                    wrapper.innerHTML = highlightedText;
+                    node.parentNode.insertBefore(wrapper, node);
+                    node.parentNode.removeChild(node);
+                }
+            }
+
+            // Function to traverse all text nodes within the editor and highlight repeated words
+            function traverseAndHighlight(node) {
+                console.log("Inside traverseAndHighlight");
+                if (node.nodeType === Node.TEXT_NODE) {
+                    highlightRepeatedWords(node);
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes) {
+                    for (var i = 0; i < node.childNodes.length; i++) {
+                        traverseAndHighlight(node.childNodes[i]);
+                    }
+                }
+            }
+
+            // Start traversing from the root node
+            traverseAndHighlight(rootNode);
+        }
+
+        var isHighlightingOn = false; // Track the state of highlighting
+
+        function toggleRepetitionHighlighting() {
+            if (isHighlightingOn) {
+                // If highlighting is on, remove the highlighting
+                removeRepetitionHighlighting();
+                isHighlightingOn = false;
+            } else {
+                // If highlighting is off, call the highlighting function
+                findAndHighlightWordRepeats();
+                isHighlightingOn = true;
+            }
+        }
+
+        // Bind the function to the "Repetition Checker" button click event
+        var repetitionCheckerBtn = document.querySelector('.repetition-checker');
+        repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
+
+
+        function removeRepetitionHighlighting() {
+            var editor = tinymce.get('tiny');
+            var rootNode = editor.getBody();
+
+            // Select all highlighted spans
+            var highlightedSpans = rootNode.querySelectorAll('span[style="background-color:yellow;"]');
+
+            // Replace each highlighted span with its text content
+            highlightedSpans.forEach(function (span) {
+                var textNode = document.createTextNode(span.textContent);
+                span.parentNode.insertBefore(textNode, span);
+                span.parentNode.removeChild(span);
+            });
+
+            // Update highlighting state
+            isHighlightingOn = false;
+        }
+
+        // Bind the function to the "Repetition Checker" button click event
+        var repetitionCheckerBtn = document.querySelector('.repetition-checker');
+        repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
+
+        function returnToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
 
     </script>
-  </body>
+</body>
+
 </html>
