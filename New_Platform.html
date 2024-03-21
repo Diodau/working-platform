@@ -11,8 +11,6 @@
     <script src="https://cdn.tiny.cloud/1/rw00kgcgf2ggfyp0mu3e3upwp7b7f8y6daf38ksflv1g42y3/tinymce/6/tinymce.min.js"
         referrerpolicy="origin"></script>
 
-
-
     <style>
         * {
             font-family: Calibri;
@@ -213,8 +211,6 @@
         </div>
         <div class="stats" id="stats">
             <div class="stats-container">
-                <button id="calculateBtn">Calculate</button>
-                <p>ARI Score: <span id="ari-score">-</span></p>
                 <p>Total number of keywords: <span id="total-keywords">-</span></p>
                 <p>% of keywords used: <span id="keywords-percentage">-</span></p>
                 <p>Keyword Proximity: <span id="keyword-proximity">-</span></p>
@@ -381,22 +377,31 @@
             }
         });
 
-        //Fix Formatting Section
-        function fixSpaces() {
-            var editor = tinymce.get('tiny');
-            var content = editor.getContent();
+function fixSpaces() {
+    var editor = tinymce.get('tiny');
+    var content = editor.getContent();
 
-            // Remove 2+ whitespace characters between words
-            content = content.replace(/\s{2,}/g, ' ');
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
 
-            // Remove leading and trailing spaces
-            content = content.trim();
-
-            editor.setContent(content);
+    // Remove 2+ whitespace characters between words but not around tags
+    var elements = tempDiv.querySelectorAll('*');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        if (element.childNodes.length === 1 && element.firstChild.nodeType === 3) {
+            // This is a text node
+            element.innerHTML = element.innerHTML.replace(/(?<=\S)\s{2,}(?=\S)/g, ' ');
         }
+    }
 
-        var fixSpacesButton = document.querySelector('.clean-lists');
-        fixSpacesButton.addEventListener('click', fixSpaces);
+    editor.setContent(tempDiv.innerHTML);
+}
+
+var fixSpacesButton = document.querySelector('.clean-lists');
+fixSpacesButton.addEventListener('click', fixSpaces);
+
+
+
 		
 		
         function removeEmptyParagraphs() {
@@ -406,19 +411,19 @@
             var tempDiv = document.createElement('div');
             tempDiv.innerHTML = content;
 
-            // Select all paragraphs in the content
-            var paragraphs = tempDiv.getElementsByTagName('p');
+            // Select all paragraphs and headings in the content
+    var elements = tempDiv.querySelectorAll('p, h1, h2, h3, h4, h5, h6');
 
-            // Loop through paragraphs and remove empty ones
-            for (var i = paragraphs.length - 1; i >= 0; i--) {
-                var paragraphContent = paragraphs[i].textContent.trim();
-                if (paragraphContent === '') {
-                    paragraphs[i].remove();
-                }
-            }
-
-            editor.setContent(tempDiv.innerHTML);
+    // Loop through elements and remove empty ones
+    for (var i = elements.length - 1; i >= 0; i--) {
+        var elementContent = elements[i].textContent.trim();
+        if (elementContent === '') {
+            elements[i].remove();
         }
+    }
+
+    editor.setContent(tempDiv.innerHTML);
+}
 		
         var removeEmptyParagraphsButton = document.querySelector('.clean-lists');
         removeEmptyParagraphsButton.addEventListener('click', removeEmptyParagraphs);
@@ -533,6 +538,8 @@
             // Update the display of total number of keywords in Stats
             var totalKeywordsElement = document.getElementById('total-keywords');
             totalKeywordsElement.textContent = totalKeywords;
+			
+			calculateKeywordProximity();
         }
 
 
@@ -738,7 +745,6 @@
             calculateKeywordsPercentage();
         });
 		
-		
 		//Word Repetition Checker
 		function findAndHighlightWordRepeats() {
             console.log("Inside findAndHighlightWordRepeats");
@@ -842,41 +848,6 @@
 		function returnToTop() {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
-
-		
-		
-        // Function to calculate the ARI score
-        function calculateARI(characters, words, sentences) {
-            return 4.71 * (characters / words) + 0.5 * (words / sentences) - 21.43;
-        }
-
-        // Function to count the number of sentences
-        function countSentences(content) {
-            // Split the content into sentences using punctuation marks as delimiters
-            var sentences = content.match(/[^.!?]+[.!?]+/g);
-            return sentences ? sentences.length : 0;
-        }
-
-        // Function to extract characters and words count from TinyMCE editor
-        function extractEditorStats() {
-            var editor = tinymce.get('tiny');
-            var content = editor.getContent({ format: 'text' });
-            var characters = content.length;
-            var words = editor.plugins.wordcount.getCount();
-            var sentences = countSentences(content);
-            return { characters: characters, words: words, sentences: sentences };
-        }
-
-        // Function to update the ARI score display
-        function updateARIScore() {
-            var editorStats = extractEditorStats();
-            var ariScore = calculateARI(editorStats.characters, editorStats.words, editorStats.sentences);
-            document.getElementById('ari-score').textContent = ariScore.toFixed(2);
-        }
-
-        // Bind the updateARIScore function to the button click event
-        var calculateBtn = document.getElementById('calculateBtn');
-        calculateBtn.addEventListener('click', updateARIScore);
 
         
 		//Hemingway Tool
