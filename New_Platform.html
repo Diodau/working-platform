@@ -368,8 +368,8 @@ function analyzeKeywords() {
             var cell4 = row.insertCell(3);
 
             cell1.innerHTML = keyword;
-            cell2.innerHTML = exactMatches;
-            cell3.innerHTML = partialMatches - exactMatches; // Subtract exact matches to avoid duplication
+            cell2.innerHTML = exactMatches + "<br>" + " (" + ((exactMatches / totalWordCount) * 100).toFixed(2) + '%' + ")";
+            cell3.innerHTML = partialMatches - exactMatches + "<br>" + " (" + (partialMatches / totalWordCount * 100).toFixed(2) + '%)';
             cell4.innerHTML = formatRequiredAmount(parseRequiredAmount(requiredAmounts[index]));
 
             // Check if the actual count is within the specified range
@@ -607,7 +607,9 @@ function areKeywordsEquivalent(keyword1, keyword2) {
         analyzeKeywordsBtn.addEventListener('click', function () {
             calculateKeywordsPercentage();
         });
-
+		
+		//End of Keyword Checker
+		
 		function toggleHelp() {
 			var helpArea = document.querySelector('.help-area');
 			var helpButton = document.querySelector('.help-button');
