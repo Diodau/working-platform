@@ -102,6 +102,15 @@
             padding: 1%;
             z-index: 999;
         }
+		
+		.list-to-column {
+            width: 35%;
+            margin-left: 1%;
+            border-radius: 11px;
+            border: 2px solid #ededed;
+            padding: 1%;
+            z-index: 999;
+        }
 
         .editor {
             width: 65%;
@@ -197,6 +206,14 @@
         th {
             text-align: center;
         }
+		
+		#output {
+            width: 100%;
+            height: 100px;
+            overflow: auto;
+            margin-top: 10px;
+            border: 1px solid #000;
+        }
     </style>
 </head>
 
@@ -210,6 +227,7 @@
             <button class="capitalize-headings" onclick="capitalizeHeadings()">Capitalize Headings</button>
             <button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
             <button class="hemingway-tool" onclick="format()">Hemingway Tool</button>
+			<button class="list-column-btn" onclick="toggleList">List to Column</button>
         </div>
         <div class="stats" id="stats">
             <div class="stats-container">
@@ -238,6 +256,14 @@
                     <div id="veryHardSentence" class="veryHardSentence counter"></div>
                 </div>
             </div>
+			
+			<div class="list-to-column" style="display: none;">
+				<div id="right">
+					<textarea id="input" placeholder="Enter words separated by commas"></textarea><br>
+					<button onclick="transform()">Transform</button>
+					<div id="output"></div>
+				</div>
+			</div>
 			
 			<div class="help-area" style="display: none;">
 				<div id="right">
@@ -609,6 +635,37 @@ function areKeywordsEquivalent(keyword1, keyword2) {
         });
 		
 		//End of Keyword Checker
+		
+function toggleList() {
+    var listArea = document.querySelector('.list-to-column');
+    var listButton = document.querySelector('.list-column-btn');
+
+    if (listArea.style.display === 'none' || listArea.style.display === '') {
+        listArea.style.display = 'block';
+        listButton.textContent = 'Hide List to Column';
+    } else {
+        listArea.style.display = 'none';
+        listButton.textContent = 'List to Column';
+    }
+
+    // Toggle the visibility of the Keyword area as well
+    var keywordArea = document.querySelector('.keywords');
+    keywordArea.style.display = listArea.style.display === 'block' ? 'none' : 'block';
+}
+
+// Bind the function to the button click event
+var listButton = document.querySelector('.list-column-btn');
+listButton.addEventListener('click', toggleList);
+		
+		function transform() {
+            var input = document.getElementById('input').value;
+            var words = input.split(',');
+            var output = document.getElementById('output');
+            output.innerHTML = '';
+            for (var i = 0; i < words.length; i++) {
+                output.innerHTML += words[i].trim() + '<br>';
+            }
+        }
 		
 		function toggleHelp() {
 			var helpArea = document.querySelector('.help-area');
