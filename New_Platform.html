@@ -171,7 +171,7 @@
         .highlighted {
             background-color: #FFA500;
         }
-
+		
         .adverb {
             background: #c4e3f3;
         }
@@ -869,19 +869,26 @@ fixSpacesButton.addEventListener('click', fixSpaces);
         }
 
 		
-		//Word Repetition Checker
+
 //Word Repetition Checker
 function findAndHighlightWordRepeats() {
     var editor = tinymce.get('tiny');
     var rootNode = editor.getBody();
+    var pattern = /\b(\w{4,})\b(?=(?:\W*\w*){0,10}\W*\1\b)/gi;
 
-    // Create a regex pattern to find repeated words within 10 words with optional characters in between
-    var pattern = /\b(\w{4,})\b(?=(?:\W+\w+){0,10}\W+\1\b)/gi;
-
-    // Function to highlight repeated words within a text node
     function highlightRepeatedWords(node) {
         var text = node.nodeValue;
-        var highlightedText = text.replace(pattern, '<span style="background-color: #FFA500;">$&</span>');
+        var words = text.split(/\b/);
+        for (var i = 0; i < words.length; i++) {
+            if (words[i].length >= 4) {
+                for (var j = i + 1; j < i + 11 && j < words.length; j++) {
+                    if (words[i].toLowerCase() === words[j].toLowerCase()) {
+                        words[i] = words[j] = '<span style="background-color: #FFA500;">' + words[i] + '</span>';
+                    }
+                }
+            }
+        }
+        var highlightedText = words.join('');
         if (highlightedText !== text) {
             var wrapper = document.createElement('span');
             wrapper.innerHTML = highlightedText;
@@ -889,7 +896,6 @@ function findAndHighlightWordRepeats() {
         }
     }
 
-    // Function to traverse all text nodes within the editor and highlight repeated words
     function traverseAndHighlight(node) {
         if (node.nodeType === Node.TEXT_NODE) {
             highlightRepeatedWords(node);
@@ -900,48 +906,35 @@ function findAndHighlightWordRepeats() {
         }
     }
 
-    // Start traversing from the root node
     traverseAndHighlight(rootNode);
 }
 
-var isHighlightingOn = false; // Track the state of highlighting
+var isHighlightingOn = false;
 
 function toggleRepetitionHighlighting() {
     if (isHighlightingOn) {
-        // If highlighting is on, remove the highlighting
         removeRepetitionHighlighting();
     } else {
-        // If highlighting is off, call the highlighting function
         findAndHighlightWordRepeats();
         isHighlightingOn = true;
     }
 }
 
-// Bind the function to the "Repetition Checker" button click event
-var repetitionCheckerBtn = document.querySelector('.repetition-checker');
-repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
-
 function removeRepetitionHighlighting() {
     var editor = tinymce.get('tiny');
     var rootNode = editor.getBody();
-
-    // Select all highlighted spans
     var highlightedSpans = rootNode.querySelectorAll('span[style="background-color: #FFA500;"]');
 
-    // Replace each highlighted span with its text content
     highlightedSpans.forEach(function (span) {
-        var textNode = document.createTextNode(span.textContent);
-        span.parentNode.replaceChild(textNode, span);
+        span.removeAttribute('style');
     });
 
-    // Update highlighting state
     isHighlightingOn = false;
 }
 
-// Bind the function to the "Repetition Checker" button click event
+
 var repetitionCheckerBtn = document.querySelector('.repetition-checker');
 repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
-
 
         //Return to Top Button
 		// Add event listener for scroll event
