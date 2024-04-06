@@ -214,6 +214,10 @@
             margin-top: 10px;
             border: 1px solid #000;
         }
+		
+		.bolded {
+			font-weight: bold;
+		}
     </style>
 </head>
 
@@ -286,8 +290,10 @@
                 <textarea id="requiredAmountInput" placeholder="Insert required amounts (one per line)"
                     style="display: none;"></textarea>
                 <button id="addKeywordsBtn">Add Keywords</button>
-                <button id="addRequiredAmountBtn">Add Required Amount</button>
+                <button id="addRequiredAmountBtn">Add Required Amount</button></br></br>
                 <button id="analyzeKeywordsBtn" onclick="analyzeKeywords()">Analyze Keywords</button>
+				<button class="highlight-keywords-button" onclick="toggleKeywordHighlighting()">Highlight All</button>
+				<button onclick="toggleKeywordBolding()">Bold All</button>
                 <h3>Keyword Results</h3>
                 <table id="keywordResults">
                     <thead>
@@ -636,6 +642,157 @@ function areKeywordsEquivalent(keyword1, keyword2) {
 		
 		//End of Keyword Checker
 		
+
+
+// Variable to track whether keyword highlighting is on or off
+var isHighlightingOn = false;
+
+// Helper function to escape special characters in a string for use in regular expressions
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Function to highlight keywords
+function highlightKeywordOccurrences(node, keywords) {
+    var text = node.nodeValue;
+    keywords.forEach(function (keyword) {
+        var pattern = new RegExp('\\b' + escapeRegExp(keyword) + '\\b', 'gi');
+        text = text.replace(pattern, function(match) {
+            return '<span class="highlighted" style="background-color: yellow;">' + match + '</span>';
+        });
+    });
+
+    var wrapper = document.createElement('span');
+    wrapper.innerHTML = text;
+    node.parentNode.replaceChild(wrapper, node);
+}
+
+function traverseAndHighlight(node, keywords) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        highlightKeywordOccurrences(node, keywords);
+    } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+            traverseAndHighlight(node.childNodes[i], keywords);
+        }
+    }
+}
+
+// Function to remove keyword highlighting
+function removeKeywordHighlighting() {
+    var editor = tinymce.get('tiny');
+    var rootNode = editor.getBody();
+    var highlightedSpans = rootNode.querySelectorAll('.highlighted');
+
+    highlightedSpans.forEach(function (span) {
+        var parent = span.parentNode;
+        while (span.firstChild) {
+            parent.insertBefore(span.firstChild, span);
+        }
+        parent.removeChild(span);
+    });
+
+    isHighlightingOn = false;
+}
+
+// Function to highlight keywords
+function highlightKeywords() {
+    var editor = tinymce.get('tiny');
+    var rootNode = editor.getBody();
+    var keywordInput = document.getElementById('keywordInput');
+    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+
+    console.log('Keywords:', keywords); // Log the keywords
+
+    traverseAndHighlight(rootNode, keywords);
+    isHighlightingOn = true;
+}
+
+// Function to toggle keyword highlighting
+function toggleKeywordHighlighting() {
+    if (isHighlightingOn) {
+        removeKeywordHighlighting();
+    } else {
+        highlightKeywords();
+    }
+}
+
+// Variable to track whether keyword bolding is on or off
+var isBoldingOn = false;
+
+function traverseAndBold(node, keywords) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        boldKeywordOccurrences(node, keywords);
+    } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+            traverseAndBold(node.childNodes[i], keywords);
+        }
+    }
+}
+
+
+// Function to bold keywords
+function boldKeywords() {
+    var editor = tinymce.get('tiny');
+    var rootNode = editor.getBody();
+    var keywordInput = document.getElementById('keywordInput');
+    var keywords = keywordInput.value.split('\n').map(keyword => keyword.trim()).filter(Boolean);
+
+    console.log('Keywords:', keywords); // Log the keywords
+
+    traverseAndBold(rootNode, keywords);
+    isBoldingOn = true;
+}
+
+// Function to bold keywords
+function boldKeywordOccurrences(node, keywords) {
+    var text = node.nodeValue;
+    keywords.forEach(function (keyword) {
+        var pattern = new RegExp('\\b' + escapeRegExp(keyword) + '\\b', 'gi');
+        text = text.replace(pattern, function(match) {
+            return '<span class="bolded"><strong>' + match + '</strong></span>';
+        });
+    });
+
+    var wrapper = document.createElement('span');
+    wrapper.innerHTML = text;
+    node.parentNode.replaceChild(wrapper, node);
+}
+
+// Function to remove keyword bolding
+function removeBolding() {
+    var editor = tinymce.get('tiny');
+    var rootNode = editor.getBody();
+    var boldedSpans = rootNode.querySelectorAll('.bolded');
+
+    boldedSpans.forEach(function (span) {
+        var parent = span.parentNode;
+        var strongElements = span.querySelectorAll('strong');
+        strongElements.forEach(function (strong) {
+            var textNode = document.createTextNode(strong.textContent);
+            strong.parentNode.replaceChild(textNode, strong);
+        });
+        parent.insertBefore(span.firstChild, span);
+        parent.removeChild(span);
+    });
+
+    isBoldingOn = false;
+}
+
+
+// Function to toggle keyword bolding
+function toggleKeywordBolding() {
+    if (isBoldingOn) {
+        removeBolding();
+    } else {
+        boldKeywords();
+    }
+}
+
+
+
+
+
+// list to column		
 function toggleList() {
     var listArea = document.querySelector('.list-to-column');
     var listButton = document.querySelector('.list-column-btn');
