@@ -232,6 +232,7 @@
             <button class="repetition-checker" onclick="findAndHighlightWordRepeats()">Repetition Checker</button>
             <button class="hemingway-tool">Readability Tool</button>
 			<button class="list-column-btn" onclick="toggleList">List to Column</button>
+			<button onclick="analyzeText()">Top Words by Density</button>
         </div>
         <div class="stats" id="stats">
             <div class="stats-container">
@@ -245,6 +246,7 @@
 
             <div class="editor">
                 <textarea id="tiny" placeholder="Write or Paste your text here"></textarea>
+				<div id="wordAnalysisResult"></div>
                 <button class="return-to-top-button" onclick="returnToTop()">&#x21E7;</button>
             </div>
 
@@ -1028,6 +1030,18 @@ fixSpacesButton.addEventListener('click', fixSpaces);
 		
 
 //Word Repetition Checker
+// Variable to track whether word repetition highlighting is on or off
+var isRepetitionHighlightingOn = false;
+
+function toggleRepetitionHighlighting() {
+    if (isRepetitionHighlightingOn) {
+        removeRepetitionHighlighting();
+    } else {
+        findAndHighlightWordRepeats();
+        isRepetitionHighlightingOn = true;
+    }
+}
+
 function findAndHighlightWordRepeats() {
     var editor = tinymce.get('tiny');
     var rootNode = editor.getBody();
@@ -1066,32 +1080,22 @@ function findAndHighlightWordRepeats() {
     traverseAndHighlight(rootNode);
 }
 
-var isHighlightingOn = false;
-
-function toggleRepetitionHighlighting() {
-    if (isHighlightingOn) {
-        removeRepetitionHighlighting();
-    } else {
-        findAndHighlightWordRepeats();
-        isHighlightingOn = true;
-    }
-}
-
 function removeRepetitionHighlighting() {
     var editor = tinymce.get('tiny');
     var rootNode = editor.getBody();
     var highlightedSpans = rootNode.querySelectorAll('span[style="background-color: #FFA500;"]');
 
     highlightedSpans.forEach(function (span) {
-        span.removeAttribute('style');
+        var textNode = document.createTextNode(span.textContent);
+        span.parentNode.replaceChild(textNode, span);
     });
 
-    isHighlightingOn = false;
+    isRepetitionHighlightingOn = false;
 }
-
 
 var repetitionCheckerBtn = document.querySelector('.repetition-checker');
 repetitionCheckerBtn.addEventListener('click', toggleRepetitionHighlighting);
+
 
         //Return to Top Button
 		// Add event listener for scroll event
@@ -1743,6 +1747,58 @@ function RemoveHemFormat() {
     // Set the content of the Tiny editor to the cleaned text
     tinyMCE.activeEditor.setContent(cleanedText);
 }
+// End of Readability App
+
+
+// Keyword Stuffing Checker
+function analyzeText() {
+    // Get the content of the TinyMCE editor
+    var content = tinymce.get('tiny').getContent({ format: 'text' });
+
+    // Define a list of common words to be excluded
+    var excludedWords = ['a', 'an', 'the', 'and', 'but', 'or', 'nor', 'for', 'so', 'yet', 'to', 'only', 'there', 'make', 'them', 'they', 'have', 'also', 'in', 'on', 'at', 'by', 'with', 'of', 'from', 'up', 'down', 'about', 'into', 'over', 'under', 'between', 'through', 'above', 'below', 'within', 'without', 'before', 'after', 'during', 'since', 'while', 'throughout', 'among', 'beside', 'along', 'toward', 'against', 'across', 'amongst', 'like', 'near', 'through', 'behind', 'beneath', 'inside', 'outside', 'onto', 'upon', 'off', 'around', 'underneath', 'whether', 'who', 'whom', 'whose', 'which', 'that', 'what', 'where', 'when', 'why', 'how', 'all', 'any', 'each', 'every', 'few', 'some', 'several', 'many', 'much', 'more', 'most', 'other', 'another', 'such', 'this', 'these', 'those', 'own', 'my', 'your', 'his', 'her', 'its', 'our', 'their'];
+
+    // Split the content into an array of words
+    var words = content.split(/\s+/);
+
+    // Create an object to store word frequencies
+    var wordFreq = {};
+
+    // Iterate through the words and count their occurrences
+    words.forEach(function(word) {
+        // Normalize the word by converting it to lowercase and normalizing Unicode characters
+        word = word.toLowerCase();
+        word = word.normalize('NFKD'); // Normalize Unicode characters
+        // Remove non-alphanumeric characters from the word
+        word = word.replace(/[^a-zA-Z0-9]/g, '');
+        // Skip words with less than 4 characters or words in the excluded list
+        if (word.length < 4 || excludedWords.includes(word)) return;
+        // Increment the count for the word
+        if (wordFreq[word]) {
+            wordFreq[word]++;
+        } else {
+            wordFreq[word] = 1;
+        }
+    });
+
+    // Sort the words by frequency
+    var sortedWords = Object.keys(wordFreq).sort(function(a, b) {
+        return wordFreq[b] - wordFreq[a];
+    });
+
+    // Display the top 20 words and their densities
+    var result = '<h2>Top 20 words by density</h2>';
+    for (var i = 0; i < Math.min(20, sortedWords.length); i++) {
+        var word = sortedWords[i];
+        var frequency = wordFreq[word];
+        var density = (frequency / words.length * 100).toFixed(2); // Calculate density as a percentage
+        result += '<p>' + (i + 1) + '. ' + word + ': ' + frequency + ' times, density: ' + density + '%</p>';
+    }
+
+    // Display the result in a div
+    document.getElementById('wordAnalysisResult').innerHTML = result;
+}
+
 
     </script>
 </body>
